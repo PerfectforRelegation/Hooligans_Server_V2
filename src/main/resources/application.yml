@@ -10,9 +10,10 @@ spring:
   config:
     activate:
       on-profile: local
+    import: optional:file:.env[.properties]
 
   datasource:
-    url: ${LOCAL_PAYMENT_DB_URL}
+    url: ${LOCAL_DB_URL}
     username: ${LOCAL_DB_USERNAME}
     password: ${LOCAL_DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -27,3 +28,9 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
   type-aliases-package: com.example.entity
+
+kakao:
+  client-id: ${KAKAO_REST_API_KEY}
+  uri:
+    auth-token: ${KAKAO_AUTH_TOKEN_URI}
+    redirect: ${KAKAO_REDIRECT_URI}
