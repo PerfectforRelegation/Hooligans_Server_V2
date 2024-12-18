@@ -1,27 +1,27 @@
 package com.example.hooligans.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
 @Getter
+@NoArgsConstructor
+@Table("user_token")
 public class UserToken {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+  @Column("user_id")
+  private Long userId;
 
-  @Column(name = "refresh_token", nullable = false)
+  @Column("refresh_token")
   private String refreshToken;
+
+  public UserToken(Long userId, String refreshToken) {
+    this.userId = userId;
+    this.refreshToken = refreshToken;
+  }
 }
