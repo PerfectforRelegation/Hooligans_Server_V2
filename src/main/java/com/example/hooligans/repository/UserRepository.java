@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 public interface UserRepository extends ReactiveCrudRepository<User, Long> {
 
-  Mono<Boolean> existsByOAuthId(String oAuthId);
+  Mono<Boolean> existsByOauthId(String oAuthId);
 
-  Mono<User> findByOAuthId(String oAuthId);
+  Mono<User> findByOauthId(String oAuthId);
 }
