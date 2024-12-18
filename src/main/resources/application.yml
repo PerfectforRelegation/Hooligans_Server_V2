@@ -17,11 +17,11 @@ spring:
     username: ${LOCAL_DB_USERNAME}
     password: ${LOCAL_DB_PASSWORD}
 
-    pool:
-      enabled: true
-      max-size: 10
-      initial-size: 5
-      max-idle-time: 30s
+#    pool:
+#      enabled: true
+#      max-size: 10
+#      initial-size: 5
+#      max-idle-time: 30s
 
 
 #  datasource:
