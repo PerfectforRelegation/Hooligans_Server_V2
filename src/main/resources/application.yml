@@ -12,22 +12,34 @@ spring:
       on-profile: local
     import: optional:file:.env[.properties]
 
-  datasource:
+  r2dbc:
     url: ${LOCAL_DB_URL}
     username: ${LOCAL_DB_USERNAME}
     password: ${LOCAL_DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
 
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
-    database-platform: org.hibernate.dialect.MySQL8Dialect
+    pool:
+      enabled: true
+      max-size: 10
+      initial-size: 5
+      max-idle-time: 30s
 
-mybatis:
-  configuration:
-    map-underscore-to-camel-case: true
-  type-aliases-package: com.example.entity
+
+#  datasource:
+#    url: ${LOCAL_DB_URL}
+#    username: ${LOCAL_DB_USERNAME}
+#    password: ${LOCAL_DB_PASSWORD}
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+
+#  jpa:
+#    hibernate:
+#      ddl-auto: create-drop
+#    show-sql: true
+#    database-platform: org.hibernate.dialect.MySQL8Dialect
+#
+#mybatis:
+#  configuration:
+#    map-underscore-to-camel-case: true
+#  type-aliases-package: com.example.entity
 
 kakao:
   client-id: ${KAKAO_REST_API_KEY}
