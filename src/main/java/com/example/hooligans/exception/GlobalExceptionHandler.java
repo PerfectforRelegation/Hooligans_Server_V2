@@ -50,6 +50,30 @@ public class GlobalExceptionHandler {
     );
   }
 
+  @ExceptionHandler
+  public Mono<ResponseEntity<ErrorResponse>> catchUserNotFoundException(UserNotFoundException e) {
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+        .message(e.getMessage())
+        .build();
+
+    return Mono.just(
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)
+    );
+  }
+
+  @ExceptionHandler
+  public Mono<ResponseEntity<ErrorResponse>> catchUserRegistrationException(UserRegistrationException e) {
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+        .message(e.getMessage())
+        .build();
+
+    return Mono.just(
+        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
+    );
+  }
+
   @Getter
   @NoArgsConstructor
   private static class ErrorResponse {
