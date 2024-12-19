@@ -1,10 +1,11 @@
 package com.example.hooligans.controller;
 
-import com.example.hooligans.entity.User;
+import com.example.hooligans.dto.UserResponse;
 import com.example.hooligans.exception.kakao.KakaoAuthorizationCodeNullPointerException;
 import com.example.hooligans.service.KakaoAuthService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +23,7 @@ public class KakaoAuthController {
   private final KakaoAuthService kakaoAuthService;
 
   @PostMapping("/auth")
-  public Mono<ResponseEntity<User>> auth(@RequestBody Map<String, String> payload) {
+  public Mono<ResponseEntity<UserResponse>> auth(@RequestBody Map<String, String> payload) {
 
     String code = payload.get("code");
 
@@ -36,7 +37,16 @@ public class KakaoAuthController {
 
           return kakaoAuthService.getUserInfo(accessToken)
               .flatMap(kakaoUserInfo -> kakaoAuthService.processUserLogin(kakaoUserInfo)
-                  .map(user -> ResponseEntity.ok().body(user))
+                  .map(loginCheckDTO -> {
+
+                    UserResponse userResponse = loginCheckDTO.getUserResponse();
+
+                    if (loginCheckDTO.isSignUp()) {
+                      return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
+                    }
+
+                    return new ResponseEntity<>(userResponse, HttpStatus.OK);
+                  })
               );
         });
 
