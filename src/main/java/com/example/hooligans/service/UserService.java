@@ -1,6 +1,6 @@
 package com.example.hooligans.service;
 
-import com.example.hooligans.dto.kakao.SocialUserResponse;
+import com.example.hooligans.dto.kakao.SocialUserRequest;
 import com.example.hooligans.entity.User;
 import com.example.hooligans.exception.UserNotFoundException;
 import com.example.hooligans.exception.UserRegistrationException;
@@ -20,15 +20,15 @@ public class UserService {
     return userRepository.existsByOauthId(oAuthId);
   }
 
-  public Mono<User> getUserByOAuthId(String oAuthId) {
+  public Mono<User> getUserByOauthId(String oauthId) {
 
-    return userRepository.findByOauthId(oAuthId)
+    return userRepository.findByOauthId(oauthId)
         .switchIfEmpty(
             Mono.error(new UserNotFoundException("oAuthId 값에 따른 User가 조회되지 않습니다."))
         );
   }
 
-  public Mono<User> registerNewUser(SocialUserResponse userResponse) {
+  public Mono<User> registerUser(SocialUserRequest userResponse) {
 
     User newUser = userResponse.toEntity();
 
