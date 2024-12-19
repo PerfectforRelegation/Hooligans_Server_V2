@@ -125,14 +125,13 @@ public class KakaoAuthService {
 
     return userService.isSignUp(oauthId)
         .flatMap(exist -> Mono.defer(() ->
-            exist ? loginUser(oauthId) : registerUser(buildSocialUserResponse(kakaoId, email, nickname))));
+            exist ? loginUser(oauthId, email) : registerUser(buildSocialUserResponse(kakaoId, email, nickname))));
   }
 
-  // TODO: 2024-12-19 이메일 변경 시 로직 필요
-  // TODO: 2024-12-19 스프링 시큐리티, jwt, 스웨거 적용 (유저엔 미적용) 
-  private Mono<LoginCheckDTO> loginUser(String oauthId) {
+  // TODO: 2024-12-19 스프링 시큐리티, jwt, 스웨거 적용 (유저엔 미적용)
+  private Mono<LoginCheckDTO> loginUser(String oauthId, String email) {
 
-    return userService.getUserByOauthId(oauthId)
+    return userService.getUserByOauthId(oauthId, email)
         .map(user -> createLoginResponse(false, user));
   }
 
