@@ -74,6 +74,18 @@ public class GlobalExceptionHandler {
     );
   }
 
+  @ExceptionHandler
+  public Mono<ResponseEntity<ErrorResponse>> catchUserEmailUpdateException(UserEmailUpdateException e) {
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+        .message(e.getMessage())
+        .build();
+
+    return Mono.just(
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
+    );
+  }
+
   @Getter
   @NoArgsConstructor
   private static class ErrorResponse {
