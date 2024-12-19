@@ -9,15 +9,15 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class SocialUserResponse {
+public class SocialUserRequest {
 
-  private Long id;
+  private Long socialId;
   private String nickname;
   private String email;
 
   @Builder
-  public SocialUserResponse(Long id, String nickname, String email) {
-    this.id = id;
+  public SocialUserRequest(Long socialId, String nickname, String email) {
+    this.socialId = socialId;
     this.nickname = nickname;
     this.email = email;
   }
@@ -34,6 +34,6 @@ public class SocialUserResponse {
   }
 
   private String createOAuthId() {
-    return OAuthProvider.KAKAO + "_" + this.id;
+    return OAuthProvider.KAKAO + "_" + this.socialId;
   }
 }
