@@ -3,19 +3,24 @@ spring:
     name: Hooligans
   profiles:
     active: local
+    group:
+      local:
+        - common
+      prod:
+        - common
 
 ---
-
 spring:
   config:
     activate:
       on-profile: local
     import: optional:file:.env[.properties]
 
-  r2dbc:
-    url: ${LOCAL_DB_URL}
-    username: ${LOCAL_DB_USERNAME}
-    password: ${LOCAL_DB_PASSWORD}
+kakao:
+  client-id: ${KAKAO_REST_API_KEY}
+  uri:
+    auth-token: ${KAKAO_AUTH_TOKEN_URI}
+    redirect: ${KAKAO_REDIRECT_URI}
 
 #    pool:
 #      enabled: true
@@ -41,8 +46,13 @@ spring:
 #    map-underscore-to-camel-case: true
 #  type-aliases-package: com.example.entity
 
-kakao:
-  client-id: ${KAKAO_REST_API_KEY}
-  uri:
-    auth-token: ${KAKAO_AUTH_TOKEN_URI}
-    redirect: ${KAKAO_REDIRECT_URI}
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  r2dbc:
+    url: ${LOCAL_DB_URL}
+    username: ${LOCAL_DB_USERNAME}
+    password: ${LOCAL_DB_PASSWORD}
