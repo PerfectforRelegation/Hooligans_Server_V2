@@ -19,74 +19,58 @@ public class GlobalExceptionHandler {
   @ExceptionHandler
   public Mono<ResponseEntity<ErrorResponse>> catchKakaoAuthorizationCodeNullPointerException(KakaoAuthorizationCodeNullPointerException e) {
 
-    ErrorResponse errorResponse = ErrorResponse.builder()
-        .message(e.getMessage())
-        .build();
-
     return Mono.just(
-        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorResponse(e.getMessage()))
     );
   }
 
   @ExceptionHandler
   public Mono<ResponseEntity<ErrorResponse>> catchKakaoGetUserInfoException(KakaoGetUserInfoException e) {
 
-    ErrorResponse errorResponse = ErrorResponse.builder()
-        .message(e.getMessage())
-        .build();
-
     return Mono.just(
-        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
+        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(buildErrorResponse(e.getMessage()))
     );
   }
 
   @ExceptionHandler
   public Mono<ResponseEntity<ErrorResponse>> catchKakaoUserInfoConvertValueException(KakaoUserInfoConvertValueException e) {
 
-    ErrorResponse errorResponse = ErrorResponse.builder()
-        .message(e.getMessage())
-        .build();
-
     return Mono.just(
-        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
+        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(buildErrorResponse(e.getMessage()))
     );
   }
 
   @ExceptionHandler
   public Mono<ResponseEntity<ErrorResponse>> catchUserNotFoundException(UserNotFoundException e) {
 
-    ErrorResponse errorResponse = ErrorResponse.builder()
-        .message(e.getMessage())
-        .build();
-
     return Mono.just(
-        ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(buildErrorResponse(e.getMessage()))
     );
   }
 
   @ExceptionHandler
   public Mono<ResponseEntity<ErrorResponse>> catchUserRegistrationException(UserRegistrationException e) {
 
-    ErrorResponse errorResponse = ErrorResponse.builder()
-        .message(e.getMessage())
-        .build();
-
     return Mono.just(
-        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
+        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(buildErrorResponse(e.getMessage()))
     );
   }
 
   @ExceptionHandler
   public Mono<ResponseEntity<ErrorResponse>> catchUserEmailUpdateException(UserEmailUpdateException e) {
 
-    ErrorResponse errorResponse = ErrorResponse.builder()
-        .message(e.getMessage())
-        .build();
-
     return Mono.just(
-        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorResponse(e.getMessage()))
     );
   }
+
+  private ErrorResponse buildErrorResponse(String message) {
+
+    return ErrorResponse.builder()
+        .message(message)
+        .build();
+  }
+
 
   @Getter
   @NoArgsConstructor
