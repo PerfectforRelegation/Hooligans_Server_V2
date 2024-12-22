@@ -43,6 +43,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	//QueryDsl
 //	implementation 'com.querydsl:querydsl-jpa:5.1.0'
 //	annotationProcessor "com.querydsl:querydsl-apt:5.1.0"
