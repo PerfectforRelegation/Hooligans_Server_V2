@@ -1,15 +1,14 @@
 package com.example.hooligans;
 
+import java.util.TimeZone;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.r2dbc.config.EnableR2dbcAuditing;
-import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 
 @SpringBootApplication
 public class HooligansApplication {
 
 	public static void main(String[] args) {
+		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
 		SpringApplication.run(HooligansApplication.class, args);
 	}
-
 }
