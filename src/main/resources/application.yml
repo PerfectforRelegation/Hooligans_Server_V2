@@ -60,3 +60,6 @@ kakao:
   uri:
     auth-token: ${KAKAO_AUTH_TOKEN_URI}
     redirect: ${KAKAO_REDIRECT_URI}
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
