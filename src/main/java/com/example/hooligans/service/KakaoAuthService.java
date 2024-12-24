@@ -1,5 +1,6 @@
 package com.example.hooligans.service;
 
+import com.example.hooligans.config.security.JwtUtil;
 import com.example.hooligans.dto.LoginCheckDTO;
 import com.example.hooligans.dto.kakao.KakaoUserInfo;
 import com.example.hooligans.dto.kakao.SocialUserRequest;
@@ -13,12 +14,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.client.reactive.ClientHttpRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -37,6 +40,7 @@ public class KakaoAuthService {
   private final WebClient webClient;
   private final UserService userService;
   private final UserMapper userMapper;
+  private final JwtUtil jwtUtil;
 
   public Mono<Map<String, Object>> getAccessToken(String code) {
 
@@ -87,7 +91,7 @@ public class KakaoAuthService {
     }
   }
 
-  public Mono<LoginCheckDTO> processUserLogin(KakaoUserInfo kakaoUserInfo) {
+  public Mono<LoginCheckDTO> processUserLogin(ServerWebExchange exchange, KakaoUserInfo kakaoUserInfo) {
 
     Long kakaoId = kakaoUserInfo.getId();
     String email = kakaoUserInfo.getKakaoAccount().getEmail();
@@ -125,20 +129,20 @@ public class KakaoAuthService {
 
     return userService.isSignUp(oauthId)
         .flatMap(exist -> Mono.defer(() ->
-            exist ? loginUser(oauthId, email) : registerUser(buildSocialUserResponse(kakaoId, email, nickname))));
+            exist ? loginUser(exchange, oauthId, email) : registerUser(exchange, buildSocialUserResponse(kakaoId, email, nickname))));
   }
 
-  // TODO: 2024-12-19 스프링 시큐리티, jwt, 스웨거 적용 (유저엔 미적용)
-  private Mono<LoginCheckDTO> loginUser(String oauthId, String email) {
+  // TODO: 2024-12-19 스웨거 적용 (유저엔 미적용)
+  private Mono<LoginCheckDTO> loginUser(ServerWebExchange exchange, String oauthId, String email) {
 
     return userService.getUserByOauthId(oauthId, email)
-        .map(user -> createLoginResponse(false, user));
+        .flatMap(user -> processLogin(exchange, user, false));
   }
 
-  private Mono<LoginCheckDTO> registerUser(SocialUserRequest userRequest) {
+  private Mono<LoginCheckDTO> registerUser(ServerWebExchange exchange, SocialUserRequest userRequest) {
 
     return userService.registerUser(userRequest)
-        .map(user -> createLoginResponse(true, user));
+        .flatMap(user -> processLogin(exchange, user, true));
   }
 
   private SocialUserRequest buildSocialUserResponse(Long socialId, String email, String nickname) {
@@ -156,5 +160,25 @@ public class KakaoAuthService {
         .isSignUp(isSignUp)
         .userResponse(userMapper.toUserResponse(user))
         .build();
+  }
+
+  private Mono<LoginCheckDTO> processLogin(ServerWebExchange exchange, User user, boolean isSignUp) {
+
+    return jwtUtil.createAccessToken(user.getOauthId())
+        .flatMap(accessToken -> {
+          setAccessTokenCookie(exchange, accessToken);
+          return Mono.just(createLoginResponse(isSignUp, user));
+        });
+  }
+
+  private void setAccessTokenCookie(ServerWebExchange exchange, String accessToken) {
+    ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
+        .httpOnly(true) // 클라이언트에서 JavaScript로 접근 불가
+        .secure(true)   // HTTPS 전용
+        .path("/")      // 모든 경로에서 유효
+        .maxAge(60 * 60) // 1시간
+        .build();
+
+    exchange.getResponse().addCookie(cookie);
   }
 }

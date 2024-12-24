@@ -54,6 +54,19 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+
+  main:
+    allow-bean-definition-overriding: true
+    web-application-type: reactive
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+
+#logging:
+#  level:
+#    org.springframework.security: DEBUG
 
 kakao:
   client-id: ${KAKAO_REST_API_KEY}
