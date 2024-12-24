@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 public class RedisUtil {
 
   private final ReactiveRedisTemplate<String, Object> reactiveRedisTemplate;
-  private static final String LOGIN_PREFIX = "login_";
+  private static final String LOGIN_PREFIX = "login:";
 
   public Mono<Boolean> addRefreshToken(String oauthId, String refreshToken, long expirationMillis) {
     String key = LOGIN_PREFIX + oauthId;
@@ -31,7 +31,8 @@ public class RedisUtil {
     return reactiveRedisTemplate
         .opsForValue()
         .get(key)
-        .map(Object::toString);
+        .map(Object::toString)
+        .switchIfEmpty(Mono.empty());
   }
 
   public Mono<Boolean> deleteRefreshToken(String oauthId) {
