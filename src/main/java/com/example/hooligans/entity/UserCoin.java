@@ -1,5 +1,7 @@
 package com.example.hooligans.entity;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -8,8 +10,8 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
 @NoArgsConstructor
-@Table("user_token")
-public class UserToken {
+@Table(name = "user_coins")
+public class UserCoin {
 
   @Id
   private Long id;
@@ -17,11 +19,15 @@ public class UserToken {
   @Column("user_id")
   private Long userId;
 
-  @Column("refresh_token")
-  private String refreshToken;
+  @Column("club_id")
+  private Long clubId;
 
-  public UserToken(Long userId, String refreshToken) {
-    this.userId = userId;
-    this.refreshToken = refreshToken;
-  }
+  @Column("coin_amount")
+  private BigDecimal coinAmount;
+
+  @Column("average_purchase_price")
+  private BigDecimal averagePurchasePrice;
+
+  @Column("last_updated")
+  private LocalDateTime lastUpdated;
 }
