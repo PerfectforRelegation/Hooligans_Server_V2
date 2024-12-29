@@ -19,8 +19,8 @@ public class UserCoin {
   @Column("user_id")
   private Long userId;
 
-  @Column("club_id")
-  private Long clubId;
+  @Column("epl_coin_id")
+  private Long eplCoinId;
 
   @Column("coin_amount")
   private BigDecimal coinAmount;

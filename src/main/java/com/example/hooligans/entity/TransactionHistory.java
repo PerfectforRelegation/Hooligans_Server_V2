@@ -18,14 +18,14 @@ public class TransactionHistory {
   @Column("id")
   private Long id;
 
-  @Column("order_id")
-  private Long orderId;
+  @Column("order_book_id")
+  private Long orderBookId;
 
   @Column("user_id")
   private Long userId;
 
-  @Column("club_id")
-  private Long clubId;
+  @Column("epl_coin_id")
+  private Long eplCoinId;
 
   @Column("transaction_type")
   private String transactionType; // ENUM('BUY', 'SELL', 'CANCELED')
