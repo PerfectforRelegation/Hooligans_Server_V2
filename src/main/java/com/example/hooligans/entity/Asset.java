@@ -10,8 +10,8 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
 @NoArgsConstructor
-@Table(name = "user_assets")
-public class UserAsset {
+@Table(name = "assets")
+public class Asset {
 
   @Id
   private Long id;

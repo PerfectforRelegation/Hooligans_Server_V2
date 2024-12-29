@@ -19,8 +19,8 @@ public class OrderBook {
   @Column("user_id")
   private Long userId;
 
-  @Column("club_id")
-  private Long clubId;
+  @Column("epl_coin_id")
+  private Long eplCoinId;
 
   @Column("order_type")
   private String orderType; // ENUM ('LIMIT', 'MARKET')

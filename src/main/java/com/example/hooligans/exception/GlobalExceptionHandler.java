@@ -71,7 +71,6 @@ public class GlobalExceptionHandler {
         .build();
   }
 
-
   @Getter
   @NoArgsConstructor
   private static class ErrorResponse {
