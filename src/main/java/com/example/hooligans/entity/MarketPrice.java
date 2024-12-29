@@ -11,15 +11,15 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-@Table("market_candles")
-public class MarketCandle {
+@Table("market_prices")
+public class MarketPrice {
 
   @Id
   @Column("id")
   private Long id;
 
-  @Column("club_id")
-  private Long clubId;
+  @Column("epl_coin_id")
+  private Long eplCoinId;
 
   @Column("timeframe")
   private String timeframe; // ENUM('1M', '1D', '1W', '1M', '1Y')
