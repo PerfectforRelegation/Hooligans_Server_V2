@@ -22,9 +22,6 @@ public class EplCoin {
   @Column("symbol")
   private String symbol;
 
-  @Column("current_price")
-  private BigDecimal currentPrice;
-
   @Column("total_supply")
   private BigDecimal totalSupply;
 
