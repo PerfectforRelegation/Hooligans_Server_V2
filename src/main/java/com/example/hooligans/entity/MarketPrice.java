@@ -22,13 +22,16 @@ public class MarketPrice {
   private Long eplCoinId;
 
   @Column("timeframe")
-  private String timeframe; // ENUM('1M', '1D', '1W', '1M', '1Y')
+  private String timeframe; // ('1M', '1D', '1W', '1M', '1Y')
 
   @Column("start_time")
   private LocalDateTime startTime;
 
   @Column("end_time")
   private LocalDateTime endTime;
+
+  @Column("current_price")
+  private BigDecimal currentPrice;
 
   @Column("open_price")
   private BigDecimal openPrice;
