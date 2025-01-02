@@ -1,0 +1,100 @@
+spring:
+  application:
+    name: api-gateway
+  profiles:
+    active: local
+    group:
+      local:
+        - common
+      prod:
+        - common
+
+---
+spring:
+  config:
+    activate:
+      on-profile: common
+    import: optional:file:.env[.properties]
+
+  data:
+    mongodb:
+      uri: ${MONGO_DB_URI}
+
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins:
+              - "http://localhost:5173"
+            allow-credentials: true
+            allowed-headers:
+              - authorization
+              - content-type
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - OPTIONS
+              - DELETE
+
+      routes:
+        - id: user-loginSession
+          uri: lb://epl-service
+          predicates:
+            - name: Path
+              args:
+                pattern: /epl/kakao/auth
+            - name: Path
+              args:
+                pattern: /epl/kakao/users/auth
+
+        - id: epl
+          uri: lb://epl-service
+          predicates:
+            - Path=/epl/**
+          filters:
+            - JwtAuthenticationFilter
+
+server:
+  port: 8080
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  r2dbc:
+    url: ${LOCAL_DB_URI}
+    username: ${LOCAL_DB_USERNAME}
+    password: ${LOCAL_DB_PASSWORD}
+
+  data:
+    redis:
+      host: ${LOCAL_REDIS_HOST}
+      port: ${LOCAL_REDIS_PORT}
+      password: ${LOCAL_REDIS_PASSWORD}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  r2dbc:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
