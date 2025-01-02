@@ -1,5 +1,6 @@
-package com.joh.common.config.security;
+package com.joh.apigateway;
 
+import com.joh.common.config.security.JwtUtil;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -36,7 +37,7 @@ public class JwtAuthenticationFilter implements WebFilter {
 
     String path = exchange.getRequest().getURI().getPath();
 
-    if (path.equals("/kakao/auth") || path.equals("/kakao/users/auth")) {
+    if (path.equals("/epl/kakao/auth") || path.equals("/epl/kakao/users/auth")) {
       return chain.filter(exchange);
     }
 
