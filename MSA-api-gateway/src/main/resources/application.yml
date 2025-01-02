@@ -42,22 +42,10 @@ spring:
               - DELETE
 
       routes:
-        - id: user-loginSession
-          uri: lb://epl-service
-          predicates:
-            - name: Path
-              args:
-                pattern: /epl/kakao/auth
-            - name: Path
-              args:
-                pattern: /epl/kakao/users/auth
-
         - id: epl
           uri: lb://epl-service
           predicates:
             - Path=/epl/**
-          filters:
-            - JwtAuthenticationFilter
 
 server:
   port: 8080
