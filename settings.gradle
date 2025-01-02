@@ -1,1 +1,8 @@
 rootProject.name = 'Hooligans'
+
+include 'MSA-api-gateway'
+include 'MSA-coin'
+include 'MSA-epl'
+include 'MSA-eureka'
+include 'MSA-notification'
+include 'MSA-common'
