@@ -1,13 +1,17 @@
-package com.joh.common.config.security;
+package com.joh.apigateway.security;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity.CsrfSpec;
+import org.springframework.security.config.web.server.ServerHttpSecurity.FormLoginSpec;
+import org.springframework.security.config.web.server.ServerHttpSecurity.HttpBasicSpec;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
@@ -19,27 +23,32 @@ import reactor.core.publisher.Mono;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
-  private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 
     System.out.println("아니 왜 안 되는데;;");
 
     return http
-        .csrf(ServerHttpSecurity.CsrfSpec::disable)
-        .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
-        .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+        .csrf(CsrfSpec::disable)
+        .httpBasic(HttpBasicSpec::disable)
+        .formLogin(FormLoginSpec::disable)
         .exceptionHandling(exceptions -> exceptions
-            .authenticationEntryPoint((exchange, ex) -> Mono.error(new RuntimeException("으아아아아아아"))))
+            .authenticationEntryPoint((exchange, ex) -> {
+
+              System.out.println("시발 왜? - " + ex.getCause().getMessage());
+              System.out.println("토큰: " + exchange.getRequest().getCookies().getFirst("accessToken"));
+              System.out.println("uri: " + exchange.getRequest().getURI());
+
+              return Mono.error(new RuntimeException("으아아아아아아"));
+            }))
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .authorizeExchange(authorize -> authorize
             .pathMatchers(HttpMethod.OPTIONS).permitAll()
-            .pathMatchers(HttpMethod.POST, "/kakao/users/auth").permitAll()
+            .pathMatchers(HttpMethod.POST, "/epl/kakao/users/auth").permitAll()
             .pathMatchers(HttpMethod.GET, "/kakao/auth").permitAll()
+            .pathMatchers("/epl/**").permitAll()
             .anyExchange().authenticated()
         )
-        .addFilterBefore(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION) // 커스텀 Jwt 인증 필터 추가
         .build();
   }
 
