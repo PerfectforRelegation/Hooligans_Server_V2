@@ -32,26 +32,6 @@ spring:
     gateway:
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowed-origins:
-              - "http://localhost:5173"
-            allow-credentials: true
-            allowed-headers:
-              - x-requested-with
-              - authorization
-              - content-type
-              - credential
-              - X-AUTH-TOKEN
-              - X-CSRF-TOKEN
-            allowed-methods:
-              - POST
-              - GET
-              - PUT
-              - PATCH
-              - OPTIONS
-              - DELETE
 
       routes:
         - id: login-session
@@ -59,12 +39,20 @@ spring:
           predicates:
             - Path=/epl/kakao/users/auth
 
-        - id: user
+        - id: epl
           uri: lb://epl-service
           predicates:
-            - Path=/epl/users/**
-          filters:
-            - StripPrefix=1
+            - Path=/epl/**
+
+        - id: coin
+          uri: lb://coin-service
+          predicates:
+            - Path=/coin/**
+
+        - id: notification
+          uri: lb://notification-service
+          predicates:
+            - Path=/notification/**
 
 logging:
   level:
@@ -117,3 +105,10 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
       password: ${REDIS_PASSWORD}
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_URL}

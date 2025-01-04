@@ -87,10 +87,18 @@ public class JwtAuthenticationFilter implements WebFilter {
           return jwtUtil.extractClaims(accessToken)
               .flatMap(claims -> {
                 String oauthId = claims.getSubject();
+
+                // 타 모듈에서 사용자 정보를 간편하게 사용하기 위한 헤더 추가 로직
+                ServerWebExchange mutatedExchange = exchange.mutate()
+                    .request(exchange.getRequest().mutate()
+                        .header("X-USER-ID", oauthId)
+                        .build())
+                    .build();
+
                 Authentication auth = new UsernamePasswordAuthenticationToken(oauthId, null, List.of());
                 SecurityContextImpl context = new SecurityContextImpl(auth);
 
-                return chain.filter(exchange)
+                return chain.filter(mutatedExchange)
                     .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(context)));
               });
         });
