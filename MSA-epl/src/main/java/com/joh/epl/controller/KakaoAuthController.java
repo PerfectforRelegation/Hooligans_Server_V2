@@ -1,8 +1,8 @@
 package com.joh.epl.controller;
 
-import com.joh.hooligans.dto.UserResponse;
-import com.joh.hooligans.exception.kakao.KakaoAuthorizationCodeNullPointerException;
-import com.joh.hooligans.service.KakaoAuthService;
+import com.joh.epl.dto.UserResponse;
+import com.joh.epl.exception.kakao.KakaoAuthorizationCodeNullPointerException;
+import com.joh.epl.service.KakaoAuthService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,13 +15,13 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/kakao/users")
+@RequestMapping("/epl")
 @RequiredArgsConstructor
 public class KakaoAuthController {
 
   private final KakaoAuthService kakaoAuthService;
 
-  @PostMapping("/auth")
+  @PostMapping("/kakao/users/auth")
   public Mono<ResponseEntity<UserResponse>> auth(
       @RequestBody Map<String, String> payload,
       ServerWebExchange exchange) {
@@ -32,7 +32,7 @@ public class KakaoAuthController {
       throw new KakaoAuthorizationCodeNullPointerException("인가 코드가 필요합니다.");
     }
 
-//    System.out.println("여기까진 됐음");
+    System.out.println("여기까진 됐음");
 
     return kakaoAuthService.getAccessToken(code)
         .flatMap(tokens -> {
