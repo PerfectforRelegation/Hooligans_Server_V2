@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: eureka-server
+  profiles:
+    active: local
+    group:
+      local:
+        - common
+      prod:
+        - common
+
+---
+spring:
+  config:
+    activate:
+      on-profile: common
+    import: optional:file:.env[.properties]
+
+server:
+  port: 8087 # Eureka 서버의 기본 포트 (8761)
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+eureka:
+  client:
+    register-with-eureka: false # Eureka 서버는 다른 Eureka 서버에 자신 등록 X
+    fetch-registry: false # 다른 Eureka 서버로부터 서비스 레지스트리를 가져오지 않음
+    service-url: # 클라이언트가 Eureka 서버와 통신하기 위해 사용할 기본 URL
+      defaultZone: "http://localhost:8087/eureka"
+  server:
+    wait-time-in-ms-when-sync-empty: 5 # 초기 동기화 대기 시간 (5ms)
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    serviceUrl:
+      defaultZone: ${MSA_EUREKA_URL}
+  server:
+    wait-time-in-ms-when-sync-empty: 5
