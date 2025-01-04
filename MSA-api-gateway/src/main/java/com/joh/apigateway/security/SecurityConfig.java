@@ -47,6 +47,8 @@ public class SecurityConfig {
             .pathMatchers(HttpMethod.POST, "/epl/kakao/users/auth").permitAll()
             .pathMatchers(HttpMethod.GET, "/kakao/auth").permitAll()
             .pathMatchers("/epl/**").permitAll()
+            .pathMatchers("/coin/**").permitAll()
+            .pathMatchers("/notification/**").permitAll()
             .anyExchange().authenticated()
         )
         .build();
