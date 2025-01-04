@@ -1,17 +1,9 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.4.1'
-    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.joh'
-version = '0.0.1-SNAPSHOT'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
+version = 'unspecified'
 
 repositories {
     mavenCentral()
@@ -35,7 +27,6 @@ dependencies {
     implementation 'io.lettuce:lettuce-core:6.5.1.RELEASE'
 
     // Spring Security&JWT
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
@@ -47,7 +38,3 @@ dependencies {
     // MongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive:3.4.1'
 }
-
-//tasks.named('test') {
-//    useJUnitPlatform()
-//}
