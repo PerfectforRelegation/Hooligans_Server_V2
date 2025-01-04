@@ -1,6 +1,6 @@
-package com.joh.apigateway;
+package com.joh.apigateway.security;
 
-import com.joh.common.config.security.JwtUtil;
+import com.joh.common.security.JwtUtil;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -30,31 +30,35 @@ public class JwtAuthenticationFilter implements WebFilter {
 
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-    
-//    System.out.println("필터 작동!");
-//    System.out.println("exchange.getRequest().getURI() = " + exchange.getRequest().getURI().getPath());
-//    System.out.println("exchange.getRequest().getMethod() = " + exchange.getRequest().getMethod());
+
+    System.out.println("필터 작동!");
+    System.out.println("exchange.getRequest().getURI() = " + exchange.getRequest().getURI().getPath());
+    System.out.println("exchange.getRequest().getMethod() = " + exchange.getRequest().getMethod());
 
     String path = exchange.getRequest().getURI().getPath();
 
-    if (path.equals("/epl/kakao/auth") || path.equals("/epl/kakao/users/auth")) {
+    if (path.equals("/kakao/auth") || path.equals("/epl/kakao/users/auth")) {
       return chain.filter(exchange);
     }
 
     String accessToken = extractAccessTokenFromCookie(exchange);
 
-    if (accessToken == null) return sendErrorResponse(exchange, "엑세스 토큰 값이 없습니다.");
+    if (accessToken == null) {
+      return sendErrorResponse(exchange, "엑세스 토큰 값이 없습니다.");
+    }
+
+    System.out.println("아주 잘 나오고~~~");
 
     // 엑세스 토큰 체크
     return jwtUtil.isAccessTokenExpired(accessToken)
         .flatMap(isExpired -> {
           if (isExpired) {
             // 엑세스 토큰 만료면, 리프레시 토큰 체크
-//            System.out.println("isExpired = " + isExpired);
+            System.out.println("isExpired = " + isExpired);
             return jwtUtil.validateRefreshToken(accessToken)
                 .flatMap(isValid -> {
                   if (isValid) {
-//                    System.out.println("isValid = " + isValid);
+                    System.out.println("isValid = " + isValid);
                     return jwtUtil.extractClaims(accessToken)
                         .flatMap(claims -> {
                           String oauthId = claims.getSubject();
@@ -64,9 +68,9 @@ public class JwtAuthenticationFilter implements WebFilter {
                           return jwtUtil.createAccessToken(oauthId)
                               .flatMap(newAccessToken -> {
                                 exchange.getResponse().addCookie(ResponseCookie.from("accessToken", newAccessToken)
-                                        .httpOnly(true)
-                                        .path("/")
-                                        .maxAge(60 * 60)
+                                    .httpOnly(true)
+                                    .path("/")
+                                    .maxAge(60 * 60)
                                     .build());
 
                                 return chain.filter(exchange)
@@ -79,7 +83,7 @@ public class JwtAuthenticationFilter implements WebFilter {
                 });
           }
 
-//          System.out.println("필터 통과");
+          System.out.println("필터 통과");
           return jwtUtil.extractClaims(accessToken)
               .flatMap(claims -> {
                 String oauthId = claims.getSubject();
@@ -96,9 +100,11 @@ public class JwtAuthenticationFilter implements WebFilter {
 
     HttpCookie cookie = exchange.getRequest().getCookies().getFirst("accessToken");
 
-//    System.out.println("cookie = " + cookie);
-    
-    if (cookie == null) return null;
+    System.out.println("cookie = " + cookie);
+
+    if (cookie == null) {
+      return null;
+    }
 
     return cookie.getValue();
   }
