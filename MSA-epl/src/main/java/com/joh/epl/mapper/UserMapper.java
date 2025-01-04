@@ -1,7 +1,7 @@
 package com.joh.epl.mapper;
 
-import com.joh.hooligans.dto.UserResponse;
-import com.joh.hooligans.entity.User;
+import com.joh.epl.dto.UserResponse;
+import com.joh.epl.entity.User;
 import org.springframework.stereotype.Component;
 
 @Component

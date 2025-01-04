@@ -1,6 +1,6 @@
 package com.joh.epl.repository;
 
-import com.joh.hooligans.entity.User;
+import com.joh.epl.entity.User;
 import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;

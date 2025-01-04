@@ -1,11 +1,11 @@
 package com.joh.epl.service;
 
-import com.joh.hooligans.dto.kakao.SocialUserRequest;
-import com.joh.hooligans.entity.User;
-import com.joh.hooligans.exception.UserEmailUpdateException;
-import com.joh.hooligans.exception.UserNotFoundException;
-import com.joh.hooligans.exception.UserRegistrationException;
-import com.joh.hooligans.repository.UserRepository;
+import com.joh.epl.dto.kakao.SocialUserRequest;
+import com.joh.epl.entity.User;
+import com.joh.epl.exception.UserEmailUpdateException;
+import com.joh.epl.exception.UserNotFoundException;
+import com.joh.epl.exception.UserRegistrationException;
+import com.joh.epl.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

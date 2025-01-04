@@ -1,13 +1,13 @@
 package com.joh.epl.service;
 
-import com.joh.hooligans.config.security.JwtUtil;
-import com.joh.hooligans.dto.LoginCheckDTO;
-import com.joh.hooligans.dto.kakao.KakaoUserInfo;
-import com.joh.hooligans.dto.kakao.SocialUserRequest;
-import com.joh.hooligans.entity.User;
-import com.joh.hooligans.entity.utils.OAuthProvider;
-import com.joh.hooligans.exception.kakao.KakaoUserInfoConvertValueException;
-import com.joh.hooligans.mapper.UserMapper;
+import com.joh.common.security.JwtUtil;
+import com.joh.epl.dto.LoginCheckDTO;
+import com.joh.epl.dto.kakao.KakaoUserInfo;
+import com.joh.epl.dto.kakao.SocialUserRequest;
+import com.joh.epl.entity.User;
+import com.joh.epl.entity.utils.OAuthProvider;
+import com.joh.epl.exception.kakao.KakaoUserInfoConvertValueException;
+import com.joh.epl.mapper.UserMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
