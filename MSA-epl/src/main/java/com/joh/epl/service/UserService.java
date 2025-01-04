@@ -1,11 +1,11 @@
 package com.joh.epl.service;
 
 import com.joh.epl.dto.kakao.SocialUserRequest;
-import com.joh.epl.entity.User;
+import com.joh.epl.model.User;
 import com.joh.epl.exception.UserEmailUpdateException;
 import com.joh.epl.exception.UserNotFoundException;
 import com.joh.epl.exception.UserRegistrationException;
-import com.joh.epl.repository.UserRepository;
+import com.joh.epl.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -39,15 +39,15 @@ public class UserService {
             return Mono.just(user);
           }
 
-          Long userId = user.getId();
+          String userId = user.getId();
 
           return Mono.defer(() -> updateEmail(userId, emailFromUserInfo));
         });
   }
 
-  private Mono<User> updateEmail(Long userId, String emailFromUserInfo) {
+  private Mono<User> updateEmail(String userId, String emailFromUserInfo) {
 
-    return userRepository.updateEmailById(userId, emailFromUserInfo)
+    return userRepository.updateEmailByIdAndNewEmail(userId, emailFromUserInfo)
         .flatMap(updatedRow -> {
           if (updatedRow == 0) {
             return Mono.error(new UserEmailUpdateException("유저 이메일 업데이트에 실패했습니다. updatedRow = 0"));
