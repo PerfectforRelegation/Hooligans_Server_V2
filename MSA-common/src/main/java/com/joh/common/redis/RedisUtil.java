@@ -1,4 +1,4 @@
-package com.joh.common.config.redis;
+package com.joh.common.redis;
 
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
-package com.joh.common.config.security;
+package com.joh.common.security;
 
-import com.joh.common.config.redis.RedisUtil;
+import com.joh.common.redis.RedisUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -81,7 +81,7 @@ public class JwtUtil {
 
     return extractClaims(accessToken)
         .map(claims -> {
-//          System.out.println("토큰 추출: " + claims.getSubject());
+          System.out.println("토큰 추출: " + claims.getSubject());
           return  claims.getExpiration().before(new Date());
         })
         .onErrorReturn(ExpiredJwtException.class, true);

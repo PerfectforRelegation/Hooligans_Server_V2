@@ -1,4 +1,4 @@
-package com.joh.common.config.redis;
+package com.joh.common.redis;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
