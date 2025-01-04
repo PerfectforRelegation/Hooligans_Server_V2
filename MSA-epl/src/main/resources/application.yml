@@ -1,1 +1,90 @@
-spring.application.name=epl
+spring:
+  profiles:
+    active: local
+    group:
+      local:
+        - common
+      prod:
+        - common
+
+---
+spring:
+  config:
+    activate:
+      on-profile: common
+    import: optional:file:.env[.properties]
+
+  application:
+    name: epl-service
+
+  data:
+    mongodb:
+      uri: ${MONGO_DB_URI}
+
+  main:
+    allow-bean-definition-overriding: true
+    web-application-type: reactive
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+
+server:
+  port: 8081
+
+kakao:
+  client-id: ${KAKAO_REST_API_KEY}
+  uri:
+    auth-token: ${KAKAO_AUTH_TOKEN_URI}
+    redirect: ${KAKAO_REDIRECT_URI}
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  r2dbc:
+    url: ${LOCAL_DB_URI}
+    username: ${LOCAL_DB_USERNAME}
+    password: ${LOCAL_DB_PASSWORD}
+
+  data:
+    redis:
+      host: ${LOCAL_REDIS_HOST}
+      port: ${LOCAL_REDIS_PORT}
+      password: ${LOCAL_REDIS_PASSWORD}
+
+logging:
+  level:
+    reactor.netty: DEBUG
+    org.springframework.web: DEBUG
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: "http://localhost:8087/eureka"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  r2dbc:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
