@@ -4,8 +4,8 @@ import com.joh.common.security.JwtUtil;
 import com.joh.epl.dto.LoginCheckDTO;
 import com.joh.epl.dto.kakao.KakaoUserInfo;
 import com.joh.epl.dto.kakao.SocialUserRequest;
-import com.joh.epl.entity.User;
-import com.joh.epl.entity.utils.OAuthProvider;
+import com.joh.epl.model.User;
+import com.joh.epl.model.utils.OAuthProvider;
 import com.joh.epl.exception.kakao.KakaoUserInfoConvertValueException;
 import com.joh.epl.mapper.UserMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,6 +41,7 @@ public class KakaoAuthService {
   private final UserService userService;
   private final UserMapper userMapper;
   private final JwtUtil jwtUtil;
+  private final ObjectMapper mapper;
 
   public Mono<Map<String, Object>> getAccessToken(String code) {
 
@@ -81,7 +82,6 @@ public class KakaoAuthService {
   }
 
   public KakaoUserInfo parseUserInfo(Object userInfo) {
-    ObjectMapper mapper = new ObjectMapper();
 
     try {
       return mapper.convertValue(userInfo, KakaoUserInfo.class);
@@ -132,7 +132,6 @@ public class KakaoAuthService {
             exist ? loginUser(exchange, oauthId, email) : registerUser(exchange, buildSocialUserResponse(kakaoId, email, nickname))));
   }
 
-  // TODO: 2024-12-19 스웨거 적용 (유저엔 미적용)
   private Mono<LoginCheckDTO> loginUser(ServerWebExchange exchange, String oauthId, String email) {
 
     return userService.getUserByOauthId(oauthId, email)

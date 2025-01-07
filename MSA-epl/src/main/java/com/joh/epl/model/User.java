@@ -1,46 +1,35 @@
-package com.joh.epl.entity;
+package com.joh.epl.model;
 
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
-@Table(name = "users")
+@Document(collection = "users") // MongoDB 컬렉션 이름
 public class User {
 
   @Id
-  private Long id;
+  private String id; // MongoDB ObjectId와 매핑
 
-  @Column("oauth_provider")
   private String oauthProvider;
-
-  @Column("oauth_id")
   private String oauthId;
-
-  @Column("email")
   private String email;
-
-  @Column("nickname")
   private String nickname;
-
-  @Column("profile_image")
   private String profileImage;
-
-  @Column("registration_date")
   private LocalDateTime registrationDate;
 
   public User() {}
 
   @Builder
   public User(String oauthProvider, String oauthId, String email, String nickname,
-      LocalDateTime registrationDate) {
+      String profileImage, LocalDateTime registrationDate) {
     this.oauthProvider = oauthProvider;
     this.oauthId = oauthId;
     this.email = email;
     this.nickname = nickname;
+    this.profileImage = profileImage;
     this.registrationDate = registrationDate;
   }
 }

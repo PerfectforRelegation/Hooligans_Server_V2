@@ -1,7 +1,7 @@
 package com.joh.epl.dto.kakao;
 
-import com.joh.epl.entity.User;
-import com.joh.epl.entity.utils.OAuthProvider;
+import com.joh.epl.model.User;
+import com.joh.epl.model.utils.OAuthProvider;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
