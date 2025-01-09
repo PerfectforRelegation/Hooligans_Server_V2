@@ -153,11 +153,11 @@ public class KakaoAuthService {
         .build();
   }
 
-  private LoginCheckDTO createLoginResponse(boolean isSignUp, User user) {
+  private LoginCheckDTO createLoginResponse(boolean isSignUp, User user, String accessToken) {
 
     return LoginCheckDTO.builder()
         .isSignUp(isSignUp)
-        .userResponse(userMapper.toUserResponse(user))
+        .userResponse(userMapper.toUserResponse(user, accessToken))
         .build();
   }
 
@@ -165,19 +165,12 @@ public class KakaoAuthService {
 
     return jwtUtil.createAccessToken(user.getOauthId())
         .flatMap(accessToken -> {
-          setAccessTokenCookie(exchange, accessToken);
-          return Mono.just(createLoginResponse(isSignUp, user));
+          setAccessTokenHeader(exchange, accessToken);
+          return Mono.just(createLoginResponse(isSignUp, user, accessToken));
         });
   }
 
-  private void setAccessTokenCookie(ServerWebExchange exchange, String accessToken) {
-    ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
-        .httpOnly(true) // 클라이언트에서 JavaScript로 접근 불가
-        .secure(true)   // HTTPS 전용
-        .path("/")      // 모든 경로에서 유효
-        .maxAge(60 * 60) // 1시간
-        .build();
-
-    exchange.getResponse().addCookie(cookie);
+  private void setAccessTokenHeader(ServerWebExchange exchange, String accessToken) {
+    exchange.getResponse().getHeaders().add("Authorization", "Bearer " + accessToken);
   }
 }
