@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter implements WebFilter {
 
     String path = exchange.getRequest().getURI().getPath();
 
-    if (path.equals("/kakao/auth") || path.equals("/epl/kakao/users/auth")) {
+    if (path.equals("/kakao/auth") || path.equals("/core/kakao/users/auth")) {
       return chain.filter(exchange);
     }
 
