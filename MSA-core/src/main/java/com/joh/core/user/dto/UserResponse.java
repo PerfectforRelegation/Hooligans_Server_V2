@@ -11,11 +11,13 @@ public class UserResponse {
   private String email;
   private String nickname;
   private String profileImage;
+  private String accessToken;
 
   @Builder
-  public UserResponse(String email, String nickname, String profileImage) {
+  public UserResponse(String email, String nickname, String profileImage, String accessToken) {
     this.email = email;
     this.nickname = nickname;
     this.profileImage = profileImage;
+    this.accessToken = accessToken;
   }
 }
