@@ -8,6 +8,14 @@ repositories {
     mavenCentral()
 }
 
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
 subprojects {
     // 공통적으로 필요한 플러그인 적용
     apply plugin: 'java'
