@@ -1,11 +1,17 @@
 package com.joh.apigateway.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -16,6 +22,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @Configuration
@@ -35,20 +42,27 @@ public class SecurityConfig {
         .exceptionHandling(exceptions -> exceptions
             .authenticationEntryPoint((exchange, ex) -> {
 
-              System.out.println("시발 왜? - " + ex.getCause().getMessage());
-              System.out.println("토큰: " + exchange.getRequest().getCookies().getFirst("accessToken"));
-              System.out.println("uri: " + exchange.getRequest().getURI());
+//          System.out.println("시발 왜? - " + ex.getCause().getMessage());
+//          System.out.println("토큰: " + exchange.getRequest().getCookies().getFirst("accessToken"));
+//          System.out.println("uri: " + exchange.getRequest().getURI());
 
-              return Mono.error(new RuntimeException("으아아아아아아"));
-            }))
+          // HTTP 상태 401로 응답 작성
+          exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+          exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
+          // 에러 메시지 생성
+          DataBufferFactory bufferFactory = exchange.getResponse().bufferFactory();
+          DataBuffer dataBuffer = bufferFactory.wrap("{\"error\": \"Unauthorized\"}".getBytes());
+
+          return exchange.getResponse().writeWith(Mono.just(dataBuffer));
+        }))
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .authorizeExchange(authorize -> authorize
             .pathMatchers(HttpMethod.OPTIONS).permitAll()
-            .pathMatchers(HttpMethod.POST, "/epl/kakao/users/auth").permitAll()
+            .pathMatchers(HttpMethod.POST, "/core/kakao/users/auth").permitAll()
             .pathMatchers(HttpMethod.GET, "/kakao/auth").permitAll()
-            .pathMatchers("/epl/**").permitAll()
+            .pathMatchers("/core/**").permitAll()
             .pathMatchers("/coin/**").permitAll()
-            .pathMatchers("/notification/**").permitAll()
             .anyExchange().authenticated()
         )
         .build();
