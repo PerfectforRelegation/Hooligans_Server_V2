@@ -3,11 +3,10 @@ package com.joh.apigateway.security;
 import com.joh.common.security.JwtUtil;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Set;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,17 +36,20 @@ public class JwtAuthenticationFilter implements WebFilter {
 
     String path = exchange.getRequest().getURI().getPath();
 
-    if (path.equals("/kakao/auth") || path.equals("/core/kakao/users/auth")) {
+    Set<String> publicPaths = Set.of(
+        "/kakao/auth",
+        "/core/kakao/users/auth"
+    );
+
+    if (publicPaths.contains(path)) {
       return chain.filter(exchange);
     }
 
-    String accessToken = extractAccessTokenFromCookie(exchange);
+    String accessToken = extractAccessTokenFromHeader(exchange);
 
     if (accessToken == null) {
-      return sendErrorResponse(exchange, "엑세스 토큰 값이 없습니다.");
+      return sendErrorResponse(exchange, "Authorization 헤더가 없습니다.");
     }
-
-    System.out.println("아주 잘 나오고~~~");
 
     // 엑세스 토큰 체크
     return jwtUtil.isAccessTokenExpired(accessToken)
@@ -67,11 +69,8 @@ public class JwtAuthenticationFilter implements WebFilter {
 
                           return jwtUtil.createAccessToken(oauthId)
                               .flatMap(newAccessToken -> {
-                                exchange.getResponse().addCookie(ResponseCookie.from("accessToken", newAccessToken)
-                                    .httpOnly(true)
-                                    .path("/")
-                                    .maxAge(60 * 60)
-                                    .build());
+
+                                exchange.getResponse().getHeaders().add("X-ACCESS-TOKEN", newAccessToken);
 
                                 return chain.filter(exchange)
                                     .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(context)));
@@ -83,7 +82,9 @@ public class JwtAuthenticationFilter implements WebFilter {
                 });
           }
 
-          System.out.println("필터 통과");
+          System.out.println("필터 통과 (엑세스 토큰 유효)");
+          exchange.getResponse().getHeaders().remove("X-ACCESS-TOKEN");
+
           return jwtUtil.extractClaims(accessToken)
               .flatMap(claims -> {
                 String oauthId = claims.getSubject();
@@ -104,17 +105,16 @@ public class JwtAuthenticationFilter implements WebFilter {
         });
   }
 
-  private String extractAccessTokenFromCookie(ServerWebExchange exchange) {
+  private String extractAccessTokenFromHeader(ServerWebExchange exchange) {
 
-    HttpCookie cookie = exchange.getRequest().getCookies().getFirst("accessToken");
-
-    System.out.println("cookie = " + cookie);
-
-    if (cookie == null) {
-      return null;
+    String authorizationHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
+    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+      return authorizationHeader.substring(7); // "Bearer " 이후의 토큰 부분 추출
     }
 
-    return cookie.getValue();
+    System.out.println("authorizationHeader = " + authorizationHeader);
+    
+    return null;
   }
 
   private Mono<Void> sendErrorResponse(ServerWebExchange exchange, String message) {
