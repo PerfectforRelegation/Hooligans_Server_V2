@@ -35,24 +35,35 @@ spring:
 
       routes:
         - id: login-session
-          uri: lb://epl-service
+          uri: lb://core-service
           predicates:
-            - Path=/epl/kakao/users/auth
+            - Path=/core/kakao/users/auth
+          filters:
+            - StripPrefix=1
 
-        - id: epl
-          uri: lb://epl-service
+        - id: core
+          uri: lb://core-service
           predicates:
-            - Path=/epl/**
+            - Path=/core/**
+          filters:
+            - StripPrefix=1
 
         - id: coin
           uri: lb://coin-service
           predicates:
             - Path=/coin/**
+          filters:
+            - StripPrefix=1
 
-        - id: notification
-          uri: lb://notification-service
+        # Default fallback route for unmatched paths
+        - id: fallback-route
+          uri: no://op
           predicates:
-            - Path=/notification/**
+            - Path=/**
+          filters:
+            - name: SetStatus
+              args:
+                status: 404
 
 logging:
   level:
