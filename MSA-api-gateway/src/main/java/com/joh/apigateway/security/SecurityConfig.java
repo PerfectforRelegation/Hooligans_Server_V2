@@ -64,6 +64,7 @@ public class SecurityConfig {
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용 HTTP 메서드
     config.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
     config.setAllowCredentials(true); // 쿠키 허용
+    config.setExposedHeaders(List.of("X-ACCESS-TOKEN"));
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", config); // 모든 경로에 대해 CORS 설정 적용

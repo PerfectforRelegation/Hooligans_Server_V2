@@ -70,6 +70,7 @@ public class JwtAuthenticationFilter implements WebFilter {
                           return jwtUtil.createAccessToken(oauthId)
                               .flatMap(newAccessToken -> {
 
+                                System.out.println("X-ACCESS-TOKEN 활성화");
                                 exchange.getResponse().getHeaders().add("X-ACCESS-TOKEN", newAccessToken);
 
                                 return chain.filter(exchange)
