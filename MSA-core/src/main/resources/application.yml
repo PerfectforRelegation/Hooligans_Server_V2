@@ -41,6 +41,17 @@ kakao:
 jwt:
   secret-key: ${JWT_SECRET_KEY}
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+  api-docs:
+    version: openapi_3_1
+    enabled: true
+    path: /v3/api-docs
+  enable-spring-security: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
 ---
 spring:
   config:
