@@ -13,6 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -22,6 +24,7 @@ import reactor.core.publisher.Mono;
 public class JwtAuthenticationFilter implements WebFilter {
 
   private final JwtUtil jwtUtil;
+  private final PathMatcher pathMatcher = new AntPathMatcher();
 
   public JwtAuthenticationFilter(JwtUtil jwtUtil) {
     this.jwtUtil = jwtUtil;
@@ -36,12 +39,20 @@ public class JwtAuthenticationFilter implements WebFilter {
 
     String path = exchange.getRequest().getURI().getPath();
 
-    Set<String> publicPaths = Set.of(
+    // 경로 패턴 리스트
+    Set<String> publicPatterns = Set.of(
         "/kakao/auth",
-        "/core/kakao/users/auth"
+        "/core/kakao/users/auth",
+        "/core/v3/**",
+        "/coin/v3/**",
+        "/v3/api-docs/**", // OpenAPI 문서 경로
+        "/core/webjars/swagger-ui/**", // Core 서비스 Swagger UI
+        "/coin/webjars/swagger-ui/**", // Coin 서비스 Swagger UI
+        "/webjars/swagger-ui/**" // 공통 Swagger UI 정적 리소스
     );
 
-    if (publicPaths.contains(path)) {
+    // 인증이 필요 없는 경로인 경우 필터를 통과
+    if (publicPatterns.stream().anyMatch(pattern -> pathMatcher.match(pattern, path))) {
       return chain.filter(exchange);
     }
 

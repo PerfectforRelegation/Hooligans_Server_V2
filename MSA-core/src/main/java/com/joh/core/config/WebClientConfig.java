@@ -1,4 +1,4 @@
-package com.joh.core.user.config;
+package com.joh.core.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
