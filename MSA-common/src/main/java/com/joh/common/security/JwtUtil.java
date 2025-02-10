@@ -87,9 +87,9 @@ public class JwtUtil {
         .onErrorReturn(ExpiredJwtException.class, true);
   }
 
-  public Mono<Boolean> validateRefreshToken(String accessToken) {
+  public Mono<Boolean> validateToken(String token) {
 
-    return extractClaims(accessToken)
+    return extractClaims(token)
         .flatMap(claims -> {
           String oauthId = claims.getSubject();
           return redisUtil.getRefreshToken(oauthId).hasElement();
