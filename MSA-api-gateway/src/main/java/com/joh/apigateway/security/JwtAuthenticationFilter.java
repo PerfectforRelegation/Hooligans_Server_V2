@@ -5,8 +5,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -48,7 +51,8 @@ public class JwtAuthenticationFilter implements WebFilter {
         "/v3/api-docs/**", // OpenAPI 문서 경로
         "/core/webjars/swagger-ui/**", // Core 서비스 Swagger UI
         "/coin/webjars/swagger-ui/**", // Coin 서비스 Swagger UI
-        "/webjars/swagger-ui/**" // 공통 Swagger UI 정적 리소스
+        "/webjars/swagger-ui/**", // 공통 Swagger UI 정적 리소스
+        "/coin/coins"
     );
 
     // 인증이 필요 없는 경로인 경우 필터를 통과
@@ -68,7 +72,7 @@ public class JwtAuthenticationFilter implements WebFilter {
           if (isExpired) {
             // 엑세스 토큰 만료면, 리프레시 토큰 체크
             System.out.println("isExpired = " + isExpired);
-            return jwtUtil.validateRefreshToken(accessToken)
+            return jwtUtil.validateToken(accessToken)
                 .flatMap(isValid -> {
                   if (isValid) {
                     System.out.println("isValid = " + isValid);
