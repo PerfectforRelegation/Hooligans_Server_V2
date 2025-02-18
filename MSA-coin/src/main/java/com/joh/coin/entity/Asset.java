@@ -17,7 +17,7 @@ public class Asset {
   private Long id;
 
   @Column("user_id")
-  private Long userId;
+  private String userId;
 
   @Column("asset_type")
   private String assetType;
