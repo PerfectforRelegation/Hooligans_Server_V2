@@ -46,6 +46,13 @@ springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
 
+kafka:
+  bootstrap-servers: localhost:9092
+  consumer:
+    group-id: reactive-group
+  producer:
+    client-id: my-producer
+
 ---
 spring:
   config:
