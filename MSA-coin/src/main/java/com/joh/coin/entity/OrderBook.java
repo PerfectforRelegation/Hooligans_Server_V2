@@ -17,7 +17,7 @@ public class OrderBook {
   private Long id;
 
   @Column("user_id")
-  private Long userId;
+  private String userId;
 
   @Column("epl_coin_id")
   private Long eplCoinId;
@@ -33,9 +33,6 @@ public class OrderBook {
 
   @Column("status")
   private String status; // 'PENDING', 'COMPLETED', 'CANCELED'
-
-  @Column("expiration_date")
-  private LocalDateTime expirationDate;
 
   @Column("created_at")
   private LocalDateTime createdAt;
