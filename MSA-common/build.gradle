@@ -37,4 +37,30 @@ dependencies {
 
     // MongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive:3.4.1'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Reactor 테스트 (비동기 테스트)
+    testImplementation 'io.projectreactor:reactor-test'
+
+//    // R2DBC H2 (테스트용 in-memory DB)
+//    testImplementation 'io.r2dbc:r2dbc-h2'
+
+    // Mockito (단위 테스트용 Mock 객체)
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+
+    // JUnit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+    // Spring WebFlux Test (웹소켓, 비동기 API 테스트)
+    testImplementation 'org.springframework.boot:spring-boot-starter-webflux'
+    testImplementation 'org.springframework:spring-webflux'
+
+//    // Embedded MongoDB (MongoDB 테스트용)
+//    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+
+//    // Kafka Test Container (Kafka 통합 테스트)
+//    testImplementation 'org.springframework.kafka:spring-kafka-test'
 }
