@@ -32,6 +32,9 @@ spring:
 server:
   port: 8082
 
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+
 springdoc:
   swagger-ui:
     path: /swagger-ui
@@ -42,6 +45,13 @@ springdoc:
   enable-spring-security: true
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
+
+kafka:
+  bootstrap-servers: localhost:9092
+  consumer:
+    group-id: reactive-group
+  producer:
+    client-id: my-producer
 
 ---
 spring:

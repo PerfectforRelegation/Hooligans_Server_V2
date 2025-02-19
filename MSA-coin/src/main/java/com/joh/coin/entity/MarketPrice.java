@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 public class MarketPrice {
 
   @Id
-  @Column("id")
   private Long id;
 
   @Column("epl_coin_id")
@@ -26,9 +25,6 @@ public class MarketPrice {
 
   @Column("start_time")
   private LocalDateTime startTime;
-
-  @Column("end_time")
-  private LocalDateTime endTime;
 
   @Column("current_price")
   private BigDecimal currentPrice;

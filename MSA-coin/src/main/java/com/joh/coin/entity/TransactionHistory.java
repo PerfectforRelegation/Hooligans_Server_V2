@@ -22,7 +22,7 @@ public class TransactionHistory {
   private Long orderBookId;
 
   @Column("user_id")
-  private Long userId;
+  private String userId;
 
   @Column("epl_coin_id")
   private Long eplCoinId;
