@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import org.springframework.transaction.reactive.TransactionalOperator;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,8 @@ public class OrderBookService {
 
   private final OrderBookRepository orderBookRepository;
   private final CoinWebSocketHandler coinWebSocketHandler;
+  // 트랜잭션
+  private final TransactionalOperator transactionalOperator;
 
   // 매수 메서드
   public Mono<TradeOrderRes> buyCoin(String userId, TradeOrderReq tradeOrderReq) {
@@ -194,7 +197,8 @@ public class OrderBookService {
           return orderBookRepository
               .save(completedOrderBook)
               .thenReturn(new TradeOrderRes("매수 요청이 완료되었습니다. 모든 주문이 체결되었습니다."));
-        }));
+        }))
+        .as(transactionalOperator::transactional); // 트랜잭션 적용;
   }
 
   public Flux<OrderBook> findPendingOrders(Long coinId, Long price, String type) {
