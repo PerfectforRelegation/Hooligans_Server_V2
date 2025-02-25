@@ -1,18 +1,14 @@
 package com.joh.coin.controller;
 
-import com.joh.coin.entity.OrderBook;
-import com.joh.coin.service.OrderService;
-import java.util.HashMap;
-import java.util.Map;
+import com.joh.coin.dto.TradeOrderReq;
+import com.joh.coin.dto.TradeOrderRes;
+import com.joh.coin.service.OrderBookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -20,13 +16,18 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/order")
 public class OrderController {
 
-  private final OrderService orderService;
+  private final OrderBookService orderBookService;
 
-  @GetMapping("/fetch")
-  public Flux<OrderBook> buyCoin(
-//      @RequestHeader("X-USER-ID") String oauthId,
-      @RequestBody Map<String, Long> request) {
+  @PostMapping("/buy")
+  public Mono<ResponseEntity<TradeOrderRes>> buyCoin(@RequestBody TradeOrderReq tradeOrderReq) {
 
-    return orderService.getOrderBook(request);
+    return orderBookService.buyCoin("testId", tradeOrderReq)
+        .map(result -> ResponseEntity.ok().body(result));
+  }
+
+  @PostMapping("/sell")
+  public Mono<?> sellCoin(@RequestBody TradeOrderReq tradeOrderReq) {
+
+    return null;
   }
 }

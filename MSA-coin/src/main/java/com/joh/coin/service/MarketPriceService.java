@@ -1,16 +1,15 @@
 package com.joh.coin.service;
 
 import com.joh.coin.dto.EplCoinInfo;
-import com.joh.coin.entity.EplCoin;
+import com.joh.coin.entity.Coin;
 import com.joh.coin.entity.MarketPrice;
-import com.joh.coin.repository.EplCoinRepository;
+import com.joh.coin.repository.CoinRepository;
 import com.joh.coin.repository.MarketPriceRepository;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 public class MarketPriceService {
 
   private final MarketPriceRepository marketPriceRepository;
-  private final EplCoinRepository eplCoinRepository;
+  private final CoinRepository coinRepository;
 
   /*
   * 9시가 되면 시장이 초기화 됨
@@ -46,11 +45,11 @@ public class MarketPriceService {
 
   // 모든 EPL 코인의 최신 시세와 변동률 가져오기 (매일 오전 9시 기준 변동률 초기화)
   public Mono<List<EplCoinInfo>> getInitialMarketPrices() {
-    Mono<List<EplCoin>> coinsMono = eplCoinRepository.findAll().collectList()
+    Mono<List<Coin>> coinsMono = coinRepository.findAll().collectList()
         .doOnError(e -> System.err.println("❌ EPL 코인 정보 조회 실패: " + e.getMessage()))
         .onErrorResume(e -> {
           System.err.println("⚠️ EPL 코인 정보 조회 실패, 빈 리스트 반환");
-          return Mono.just(Collections.<EplCoin>emptyList()); // ⭐ 제네릭 타입 지정
+          return Mono.just(Collections.<Coin>emptyList()); // ⭐ 제네릭 타입 지정
         });
 
     Mono<List<MarketPrice>> openingPricesMono = marketPriceRepository.findOpeningPricesForToday().collectList()
@@ -62,7 +61,7 @@ public class MarketPriceService {
 
     return Mono.zip(coinsMono, openingPricesMono)
         .flatMap(tuple -> {
-          List<EplCoin> coins = tuple.getT1();
+          List<Coin> coins = tuple.getT1();
           List<MarketPrice> openingPrices = tuple.getT2();
 
           // 만약 두 리스트가 모두 비어 있다면 빈 리스트 반환
@@ -72,8 +71,8 @@ public class MarketPriceService {
           }
 
           // 9시 기준 가격 매핑
-          Map<Long, BigDecimal> openingPriceMap = openingPrices.stream()
-              .collect(Collectors.toMap(MarketPrice::getEplCoinId, MarketPrice::getCurrentPrice, (existing, replacement) -> existing));
+          Map<Long, Long> openingPriceMap = openingPrices.stream()
+              .collect(Collectors.toMap(MarketPrice::getCoinId, MarketPrice::getCurrentPrice, (existing, replacement) -> existing));
 
           // EplCoinInfo 리스트 생성 (변동률은 0으로 초기화)
           List<EplCoinInfo> coinInfoList = coins.stream()
@@ -82,16 +81,16 @@ public class MarketPriceService {
                   return EplCoinInfo.builder()
                       .name(coin.getName())
                       .symbol(coin.getSymbol())
-                      .currentPrice(openingPriceMap.getOrDefault(coin.getId(), BigDecimal.ZERO))
-                      .change(BigDecimal.ZERO)
+                      .currentPrice(openingPriceMap.getOrDefault(coin.getId(), 0L))
+                      .change(0L)
                       .build();
                 } catch (Exception e) {
                   System.err.println("❌ EplCoinInfo 객체 생성 실패 (코인 ID: " + coin.getId() + "): " + e.getMessage());
                   return EplCoinInfo.builder()
                       .name("Unknown")
                       .symbol("Unknown")
-                      .currentPrice(BigDecimal.ZERO)
-                      .change(BigDecimal.ZERO)
+                      .currentPrice(0L)
+                      .change(0L)
                       .build();
                 }
               })
