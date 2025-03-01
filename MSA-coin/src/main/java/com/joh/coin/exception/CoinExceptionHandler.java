@@ -19,7 +19,19 @@ public class CoinExceptionHandler {
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ErrorResponseDTO.builder()
                 .message(e.getMessage())
-                .build()));
+                .build())
+    );
+  }
+
+  @ExceptionHandler
+  public Mono<ResponseEntity<ErrorResponseDTO>> catchOrderBookSaveException(OrderBookSaveException e) {
+    return Mono.just(
+        ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ErrorResponseDTO.builder()
+                .message(e.getMessage())
+                .build())
+    );
   }
 
   @Getter
