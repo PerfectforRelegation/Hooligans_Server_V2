@@ -6,6 +6,7 @@ import com.joh.coin.entity.OrderBook;
 import com.joh.coin.entity.utill.OrderStatus;
 import com.joh.coin.entity.utill.OrderType;
 import com.joh.coin.exception.FindOrderBookDataException;
+import com.joh.coin.exception.OrderBookSaveException;
 import com.joh.coin.handler.CoinWebSocketHandler;
 import com.joh.coin.repository.OrderBookRepository;
 import java.time.LocalDateTime;
@@ -49,10 +50,6 @@ public class OrderBookService {
               OrderStatus.COMPLETED.name(),
               sellOrderBook.getCreatedAt()
           )
-              .onErrorResume(e -> {
-                System.err.println("findCompletedOrdersFromSameRequest() 에러: " + e.getMessage());
-                return Mono.error(new RuntimeException("체결된 OrderBook 조회 중 오류 발생"));
-              })
               .flatMap(completedOrderBook -> { // 체결된 주문이 존재하는 경우
                 long sellAmount = sellOrderBook.getAmount();
 
@@ -128,6 +125,7 @@ public class OrderBookService {
                 }
               }));
         })
+        .onErrorMap(e -> new OrderBookSaveException("매수 요청 처리 중 에러 발생: " + e.getMessage()))
         .then(Mono.defer(() -> { // 모든 매도 주문 처리가 끝난 후
           long restAmountToBuy = amountToBuy.get();
           long completedAmountToBuy = amount - restAmountToBuy;
@@ -198,6 +196,7 @@ public class OrderBookService {
               .save(completedOrderBook)
               .thenReturn(new TradeOrderRes("매수 요청이 완료되었습니다. 모든 주문이 체결되었습니다."));
         }))
+        .onErrorMap(e -> new OrderBookSaveException("남은 매수 요청 처리 중 오류 발생: " + e.getMessage()))
         .as(transactionalOperator::transactional); // 트랜잭션 적용;
   }
 
