@@ -1,6 +1,6 @@
 package com.joh.coin.entity;
 
-import java.math.BigDecimal;
+import com.joh.coin.entity.utill.OrderStatus;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,14 +20,17 @@ public class OrderBook {
   @Column("user_id")
   private String userId;
 
-  @Column("epl_coin_id")
-  private Long eplCoinId;
+  @Column("coin_id")
+  private Long coinId;
 
-  @Column("order_type")
-  private String orderType; // ENUM 매수냐 매도냐
+  @Column("type")
+  private String type; // ENUM 매수냐 매도냐
 
-  @Column("order_price")
-  private Long orderPrice;
+  @Column("amount")
+  private Long amount;
+
+  @Column("price")
+  private Long price;
 
   @Column("status")
   private String status; // 'PENDING', 'COMPLETED', 'CANCELED'
@@ -38,17 +41,22 @@ public class OrderBook {
   @Column("updated_at")
   private LocalDateTime updatedAt;
 
-  public void changeStatusToCompleted() {
-    this.status = "COMPLETED";
+  public void updateStatusToCompleted() {
+    this.status = OrderStatus.COMPLETED.name();
+  }
+
+  public void updateAmount(long changedAmount) {
+    this.amount = changedAmount;
   }
 
   @Builder
-  public OrderBook(String userId, Long eplCoinId, String orderType, Long orderPrice, String status,
+  public OrderBook(String userId, Long coinId, String type, Long amount, Long price, String status,
       LocalDateTime createdAt) {
     this.userId = userId;
-    this.eplCoinId = eplCoinId;
-    this.orderType = orderType;
-    this.orderPrice = orderPrice;
+    this.coinId = coinId;
+    this.type = type;
+    this.amount = amount;
+    this.price = price;
     this.status = status;
     this.createdAt = createdAt;
   }

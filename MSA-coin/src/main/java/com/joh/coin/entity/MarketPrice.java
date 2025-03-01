@@ -17,29 +17,29 @@ public class MarketPrice {
   @Id
   private Long id;
 
-  @Column("epl_coin_id")
-  private Long eplCoinId;
+  @Column("coin_id")
+  private Long coinId;
 
-  @Column("timeframe")
-  private String timeframe; // ('1M', '1D', '1W', '1M', '1Y')
+  @Column("timeframe") // 1시간 마다
+  private String timeframe; // ('1D', '1W', '1M', '1Y')
 
   @Column("start_time")
   private LocalDateTime startTime;
 
   @Column("current_price")
-  private BigDecimal currentPrice;
+  private Long currentPrice;
 
   @Column("open_price")
-  private BigDecimal openPrice;
+  private Long openPrice;
 
   @Column("close_price")
-  private BigDecimal closePrice;
+  private Long closePrice;
 
   @Column("high_price")
-  private BigDecimal highPrice;
+  private Long highPrice;
 
   @Column("low_price")
-  private BigDecimal lowPrice;
+  private Long lowPrice;
 
   @Column("trading_volume")
   private BigDecimal tradingVolume;

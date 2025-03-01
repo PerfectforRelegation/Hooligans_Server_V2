@@ -4,9 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joh.coin.dto.EplCoinInfo;
 import com.joh.coin.service.MarketPriceService;
-import jakarta.annotation.PostConstruct;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -26,8 +23,8 @@ public class CoinWebSocketHandler implements WebSocketHandler {
 
   private final MarketPriceService marketPriceService;
   private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 변환기
-  private final Map<String, BigDecimal> initialPrices = new ConcurrentHashMap<>(); // 9시 기준 초기 가격
-  private final Map<String, BigDecimal> latestPrices = new ConcurrentHashMap<>(); // 실시간 가격 업데이트
+  private final Map<String, Long> initialPrices = new ConcurrentHashMap<>(); // 9시 기준 초기 가격
+  private final Map<String, Long> latestPrices = new ConcurrentHashMap<>(); // 실시간 가격 업데이트
 
 //  @PostConstruct // 서버 시작 시 초기화
 //  public void initialize() {
@@ -46,7 +43,6 @@ public class CoinWebSocketHandler implements WebSocketHandler {
   public Mono<Void> handle(WebSocketSession session) {
     System.out.println("✅ WebSocket 연결됨: " + session.getId());
 
-    // 1. 웹소켓 연결 시 초기화
     // 1. 웹소켓 연결 시 초기화
     Mono<List<EplCoinInfo>> initialCoinData = marketPriceService.getInitialMarketPrices()
         .flatMap(coinList -> {
@@ -75,18 +71,18 @@ public class CoinWebSocketHandler implements WebSocketHandler {
       List<EplCoinInfo> updatedCoinInfos = coinList.stream()
           .map(coin -> {
             // 초기 가격과 실시간 가격을 비교하여 변동률 계산
-            BigDecimal initialPrice = initialPrices.getOrDefault(coin.getSymbol(), coin.getCurrentPrice());
-            BigDecimal latestPrice = latestPrices.getOrDefault(coin.getSymbol(), coin.getCurrentPrice());
+            Long initialPrice = initialPrices.getOrDefault(coin.getSymbol(), coin.getCurrentPrice());
+            Long latestPrice = latestPrices.getOrDefault(coin.getSymbol(), coin.getCurrentPrice());
 
             System.out.println("🔍 코인: " + coin.getSymbol() + " | 초기가: " + initialPrice + " | 최신가: " + latestPrice);
 
-            BigDecimal change = calculatePercentageChange(initialPrice, latestPrice);
+//            Long change = calculatePercentageChange(initialPrice, latestPrice);
 
             return EplCoinInfo.builder()
                 .name(coin.getName())
                 .symbol(coin.getSymbol())
                 .currentPrice(latestPrice)
-                .change(change)
+//                .change(change)
                 .build();
           })
           .collect(Collectors.toList());
@@ -99,17 +95,17 @@ public class CoinWebSocketHandler implements WebSocketHandler {
   }
 
   // 실시간 가격 업데이트
-  public void updatePrice(String coinSymbol, BigDecimal newPrice) {
+  public void updatePrice(String coinSymbol, Long newPrice) {
     latestPrices.put(coinSymbol, newPrice);
   }
 
-  // 변동률 계산 공식: (현재가 - 오전 9시 가격) / 오전 9시 가격 * 100
-  private BigDecimal calculatePercentageChange(BigDecimal basePrice, BigDecimal currentPrice) {
-    if (basePrice == null || basePrice.compareTo(BigDecimal.ZERO) == 0) {
-      return BigDecimal.ZERO;
-    }
-    return currentPrice.subtract(basePrice)
-        .divide(basePrice, 4, RoundingMode.HALF_UP)
-        .multiply(BigDecimal.valueOf(100));
-  }
+//  // 변동률 계산 공식: (현재가 - 오전 9시 가격) / 오전 9시 가격 * 100
+//  private BigDecimal calculatePercentageChange(Long basePrice, Long currentPrice) {
+//    if (basePrice == null || basePrice.compareTo(BigDecimal.ZERO) == 0) {
+//      return BigDecimal.ZERO;
+//    }
+//    return currentPrice.subtract(basePrice)
+//        .divide(basePrice, 4, RoundingMode.HALF_UP)
+//        .multiply(BigDecimal.valueOf(100));
+//  }
 }

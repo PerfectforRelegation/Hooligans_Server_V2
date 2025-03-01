@@ -1,6 +1,5 @@
 package com.joh.coin.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,8 +9,8 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
 @NoArgsConstructor
-@Table(name = "epl_coins")
-public class EplCoin {
+@Table(name = "coins")
+public class Coin {
 
   @Id
   private Long id;
@@ -23,7 +22,7 @@ public class EplCoin {
   private String symbol;
 
   @Column("total_supply")
-  private BigDecimal totalSupply;
+  private Long totalSupply;
 
   @Column("created_at")
   private LocalDateTime createdAt;
