@@ -26,8 +26,9 @@ public class OrderController {
   }
 
   @PostMapping("/sell")
-  public Mono<?> sellCoin(@RequestBody TradeOrderReq tradeOrderReq) {
+  public Mono<ResponseEntity<TradeOrderRes>> sellCoin(@RequestBody TradeOrderReq tradeOrderReq) {
 
-    return null;
+    return orderBookService.sellCoin("testID", tradeOrderReq)
+        .map(result -> ResponseEntity.ok().body(result));
   }
 }
