@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -38,11 +39,13 @@ public class OrderBook {
   @Column("created_at")
   private LocalDateTime createdAt;
 
+  @Setter
   @Column("updated_at")
   private LocalDateTime updatedAt;
 
   public void updateStatusToCompleted() {
     this.status = OrderStatus.COMPLETED.name();
+    this.updatedAt = LocalDateTime.now();
   }
 
   public void updateAmount(long changedAmount) {
