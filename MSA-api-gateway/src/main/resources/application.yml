@@ -55,13 +55,20 @@ spring:
           filters:
             - StripPrefix=1
 
-        - id: coin-websocket
-          uri: lb:ws://coin-service
+        - id: coin-overview
+          uri: lb://coin-overview-service
           predicates:
-            - Path=/coin/coins
+            - Path=/coin-overview/**
           filters:
             - StripPrefix=1
-            - RewritePath=/coin/coins(?<segment>.*), /coins${segment}
+
+        - id: coin-websocket
+          uri: lb:ws://coin-overview-service
+          predicates:
+            - Path=/coin-overview/**
+          filters:
+            - StripPrefix=1
+            - RewritePath=/coin-overview/(?<segment>.*), /${segment}
 
         # Default fallback route for unmatched paths
         - id: fallback-route
