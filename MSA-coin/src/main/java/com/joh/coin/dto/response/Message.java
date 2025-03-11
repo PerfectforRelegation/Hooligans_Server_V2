@@ -1,15 +1,15 @@
-package com.joh.coin.dto;
+package com.joh.coin.dto.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class TradeOrderRes {
+public class Message {
 
   private String message;
 
-  public TradeOrderRes(String message) {
+  public Message(String message) {
     this.message = message;
   }
 }
