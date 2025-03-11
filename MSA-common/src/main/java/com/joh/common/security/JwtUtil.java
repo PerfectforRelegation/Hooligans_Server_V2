@@ -1,6 +1,6 @@
 package com.joh.common.security;
 
-import com.joh.common.redis.RedisUtil;
+import com.joh.common.redis.RedisTokenManager;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -16,13 +16,13 @@ import reactor.core.publisher.Mono;
 public class JwtUtil {
 
   private final SecretKey secretKey;
-  private final RedisUtil redisUtil;
+  private final RedisTokenManager redisTokenManager;
   private static final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 1000; // 1분
   private static final long REFRESH_TOKEN_EXPIRATION_TIME = 60 * 1000 * 10; // 10분
 
-  public JwtUtil(@Value("${jwt.secret-key}") String secretKey, RedisUtil redisUtil) {
+  public JwtUtil(@Value("${jwt.secret-key}") String secretKey, RedisTokenManager redisTokenManager) {
     this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secretKey));
-    this.redisUtil = redisUtil;
+    this.redisTokenManager = redisTokenManager;
   }
 
   public Mono<String> createAccessToken(String oauthId) {
@@ -57,7 +57,7 @@ public class JwtUtil {
           .signWith(secretKey)
           .compact();
     }).flatMap(refreshToken -> 
-        redisUtil.addRefreshToken(oauthId, refreshToken, REFRESH_TOKEN_EXPIRATION_TIME)
+        redisTokenManager.addRefreshToken(oauthId, refreshToken, REFRESH_TOKEN_EXPIRATION_TIME)
         ).then(); // Mono<Void> 반환
   }
 
@@ -92,7 +92,7 @@ public class JwtUtil {
     return extractClaims(token)
         .flatMap(claims -> {
           String oauthId = claims.getSubject();
-          return redisUtil.getRefreshToken(oauthId).hasElement();
+          return redisTokenManager.getRefreshToken(oauthId).hasElement();
         });
   }
 }
