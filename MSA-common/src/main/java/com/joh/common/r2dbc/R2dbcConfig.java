@@ -1,4 +1,4 @@
-package com.joh.coin.config;
+package com.joh.common.r2dbc;
 
 import io.r2dbc.spi.ConnectionFactory;
 import org.springframework.context.annotation.Bean;
