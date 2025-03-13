@@ -1,4 +1,4 @@
-package com.joh.coin.repository;
+package com.joh.common.coin.asset;
 
 import com.joh.coin.entity.Asset;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
