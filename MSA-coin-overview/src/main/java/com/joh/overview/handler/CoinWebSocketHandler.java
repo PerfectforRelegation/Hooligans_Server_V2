@@ -1,10 +1,10 @@
-package com.joh.coin.handler;
+package com.joh.overview.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.joh.coin.dto.response.CoinDTO;
-import com.joh.coin.dto.response.UpdatedCoinDTO;
-import com.joh.coin.service.MarketPriceService;
+import com.joh.overview.dto.CoinDTO;
+import com.joh.overview.dto.UpdatedCoinDTO;
+import com.joh.overview.service.MarketPriceService;
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Collection;
