@@ -1,4 +1,4 @@
-package com.joh.coin.entity;
+package com.joh.overview.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
