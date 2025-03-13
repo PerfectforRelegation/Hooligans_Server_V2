@@ -1,6 +1,5 @@
-package com.joh.coin.dto.response;
+package com.joh.overview.dto;
 
-import com.joh.coin.dto.response.UpdatedCoinDTO;
 import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Getter;
