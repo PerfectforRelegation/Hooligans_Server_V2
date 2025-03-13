@@ -1,4 +1,4 @@
-package com.joh.coin.repository;
+package com.joh.overview.repository;
 
 import com.joh.coin.entity.MarketPrice;
 import java.util.List;
@@ -21,3 +21,5 @@ public interface MarketPriceRepository extends ReactiveCrudRepository<MarketPric
 //  INNER JOIN epl_coins ec ON mp.epl_coin_id = ec.id
 //  WHERE mp.start_time BETWEEN CONCAT(CURRENT_DATE, ' 09:00:00') AND CONCAT(CURRENT_DATE, ' 09:00:00');
 }
+
+// TODO: 2025-02-19 아이디, 가격 받고
