@@ -1,6 +1,6 @@
-package com.joh.coin.config;
+package com.joh.overview.config;
 
-import com.joh.coin.handler.CoinWebSocketHandler;
+import com.joh.overview.handler.CoinWebSocketHandler;
 import java.util.Map;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
