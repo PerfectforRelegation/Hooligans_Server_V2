@@ -1,4 +1,4 @@
-package com.joh.coin.dto.response;
+package com.joh.overview.dto;
 
 import java.math.BigDecimal;
 import lombok.Builder;
