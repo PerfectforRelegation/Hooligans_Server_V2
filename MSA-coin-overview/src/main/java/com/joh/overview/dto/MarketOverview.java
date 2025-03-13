@@ -1,4 +1,4 @@
-package com.joh.coin.dto.response;
+package com.joh.overview.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,6 +7,6 @@ import lombok.Getter;
 @Builder
 public class MarketOverview {
 
-  private UserAsset userAsset;
-  private CoinDTO
+//  private UserAsset userAsset;
+  private CoinDTO coinDTO;
 }
