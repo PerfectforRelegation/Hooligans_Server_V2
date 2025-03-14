@@ -1,11 +1,9 @@
 package com.joh.overview.repository;
 
-import com.joh.coin.entity.MarketPrice;
-import java.util.List;
+import com.joh.overview.entity.MarketPrice;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 public interface MarketPriceRepository extends ReactiveCrudRepository<MarketPrice, Long> {
 
