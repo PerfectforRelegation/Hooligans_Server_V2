@@ -7,8 +7,9 @@ import com.joh.coin.entity.utill.OrderStatus;
 import com.joh.coin.entity.utill.OrderType;
 import com.joh.coin.exception.FindOrderBookDataException;
 import com.joh.coin.exception.OrderBookSaveException;
-import com.joh.coin.handler.CoinWebSocketHandler;
+//import com.joh.coin.handler.CoinWebSocketHandler;
 import com.joh.coin.repository.OrderBookRepository;
+import com.joh.common.coin.CoinRepository;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,10 @@ import org.springframework.transaction.reactive.TransactionalOperator;
 public class OrderBookService {
 
   private final OrderBookRepository orderBookRepository;
-  private final CoinWebSocketHandler coinWebSocketHandler;
+//  private final CoinWebSocketHandler coinWebSocketHandler;
   // 트랜잭션
   private final TransactionalOperator transactionalOperator;
+  private final CoinRepository coinRepository;
 
   // 매수 메서드
   public Mono<Message> buyCoin(String userId, TradeOrder tradeOrder) {
@@ -125,10 +127,10 @@ public class OrderBookService {
           long completedAmountToBuy = amount - restAmountToBuy;
           LocalDateTime nowTime = LocalDateTime.now();
 
-          // TODO: 2025-02-26 현재가 수정 (카프카를 통해 넘겨주는 건 너무 오바인듯), 일단 명시 
-          if (restAmountToBuy < amount) {
-            coinWebSocketHandler.updateCurrentPrice(coinId, price);
-          }
+          // TODO: 2025-03-13 카프카로 overview 서비스에 데이터 전송
+//          if (restAmountToBuy < amount) {
+//            coinWebSocketHandler.updateCurrentPrice(coinId, price);
+//          }
 
           // amount = 4, amountToBuy = 1 -> 3개는 completed, 1개는 pending 이어야 함
           // 매수한 게 없으면 그대로 PENDING 저장
@@ -360,7 +362,8 @@ public class OrderBookService {
         .onErrorMap(e -> new OrderBookSaveException("남은 매도 요청 처리 중 오류 발생: " + e.getMessage()))
         .as(transactionalOperator::transactional)
         .flatMap(result -> {
-          if (amountToSell.get() < amount) return coinWebSocketHandler.updateCurrentPrice(coinId, price).thenReturn(result);
+          // TODO: 2025-03-13 카프카로 overview 서비스에 데이터 전송
+          // if (amountToSell.get() < amount) return coinWebSocketHandler.updateCurrentPrice(coinId, price).thenReturn(result);
           return Mono.just(result);
         });
   }
