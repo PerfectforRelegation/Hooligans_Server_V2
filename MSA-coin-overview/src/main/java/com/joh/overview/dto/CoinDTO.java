@@ -1,43 +1,39 @@
 package com.joh.overview.dto;
 
-import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
-public class CoinDTO {
+public class CoinDTO {   // 홈에서 표현할 코인 데이터
 
+  private Long id;
   private String name;        // 코인 이름 (EPL 구단 이름)
   private String symbol;      // 코인 심볼
-  private Long currentPrice;   // 현재 시세
-  private BigDecimal changeRate;  // 24시간 변동률
+  private Long initialPrice;  // 초기가
+  private Long currentPrice;  // 현재가
 
   @Builder
-  public CoinDTO(String name, String symbol, Long currentPrice, BigDecimal changeRate) {
+  public CoinDTO(Long id, String name, String symbol, Long initialPrice, Long currentPrice) {
+    this.id = id;
     this.name = name;
     this.symbol = symbol;
+    this.initialPrice = initialPrice;
     this.currentPrice = currentPrice;
-    this.changeRate = changeRate;
   }
 
-  public UpdatedCoinDTO updateCurrentPriceAndChange(Long initialPrice, Long currentPrice) {
-    this.currentPrice = currentPrice;
+  public UpdatedCoinDTO updateCurrentPrice(Long updatedCurrentPrice) {
+    this.currentPrice = updatedCurrentPrice;
 
-    BigDecimal updatedChangeRate = calculateChangeRate(initialPrice, currentPrice);
-    this.changeRate = updatedChangeRate;
     return UpdatedCoinDTO.builder()
         .symbol(this.symbol)
-        .changeRate(updatedChangeRate)
+        .changedCurrentPrice(this.currentPrice)
         .build();
   }
 
-  private static BigDecimal calculateChangeRate(Long initialPrice, Long currentPrice) {
-    if (initialPrice == null || initialPrice == 0) return BigDecimal.valueOf(0.0);
-
-    BigDecimal newPrice = BigDecimal.valueOf(currentPrice);
-    BigDecimal oldPrice = BigDecimal.valueOf(initialPrice);
-    return newPrice.subtract(oldPrice).multiply(BigDecimal.valueOf(100));
+  // 배치 시 초기가 수정 메서드도 필요함
+  public void updateInitialPriceByBatch(Long updatedInitialPrice) {
+    this.initialPrice = updatedInitialPrice;
   }
 }
