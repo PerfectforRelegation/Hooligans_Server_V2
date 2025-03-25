@@ -46,16 +46,20 @@ public class CoinWebSocketHandler implements WebSocketHandler {
   private final Sinks.Many<Collection<CoinDTO>> coinsSink = Sinks.many().multicast().onBackpressureBuffer();
   private final Sinks.Many<UpdatedCoinDTO> updatedPriceSink = Sinks.many().multicast().onBackpressureBuffer();
 
-  // TODO: 2025-03-05 변동률도 계산해야 함
+  // TODO: 2025-03-05 변동률 계산은 프론트엔드에서!
 
-  // TODO: 2025-03-06 유저 자산 정보 실시간 변동
-  // 이건 유저의 보유 코인과 수량, 사용한 돈을 보내면 될둣...?
-
-
+  // TODO: 2025-03-14 기본 데이터 전송은 "코인 이름", "코인 심볼", "초기가", "현재가(실시간)"
 
   @PostConstruct
   public void initialize() {
-
+    marketPriceService.getCoinsForInitial()
+        .doOnNext(coinDTO -> {
+          coins.put(coinDTO.getId(), coinDTO);
+          initialPrice.put(coinDTO.getSymbol(), coinDTO.getInitialPrice());
+        })
+        .collectList()
+        .doOnSuccess(coinsSink::tryEmitNext)
+        .subscribe();
   }
 
   @Override
@@ -78,11 +82,11 @@ public class CoinWebSocketHandler implements WebSocketHandler {
   }
 
   // 실시간 가격 업데이트
-  public Mono<Void> updateCurrentPrice(Long coinId, Long newPrice) {
+  public Mono<Void> updateCurrentPrice(Long coinId, Long updatedCurrentPrice) {
     CoinDTO coin = coins.get(coinId);
-    String symbol = coin.getSymbol();
-    Long oldPrice = initialPrice.get(symbol);
-    UpdatedCoinDTO updatedCoinDTO = coin.updateCurrentPriceAndChange(oldPrice, newPrice);
+//    String symbol = coin.getSymbol();
+//    Long oldPrice = initialPrice.get(symbol);
+    UpdatedCoinDTO updatedCoinDTO = coin.updateCurrentPrice(updatedCurrentPrice);
 
     updatedPriceSink.tryEmitNext(updatedCoinDTO);
     return null;
@@ -96,14 +100,4 @@ public class CoinWebSocketHandler implements WebSocketHandler {
       throw new RuntimeException("JSON 변환 오류", e);
     }
   }
-
-//  // 변동률 계산 공식: (현재가 - 오전 9시 가격) / 오전 9시 가격 * 100
-//  private BigDecimal calculatePercentageChange(Long basePrice, Long currentPrice) {
-//    if (basePrice == null || basePrice.compareTo(BigDecimal.ZERO) == 0) {
-//      return BigDecimal.ZERO;
-//    }
-//    return currentPrice.subtract(basePrice)
-//        .divide(basePrice, 4, RoundingMode.HALF_UP)
-//        .multiply(BigDecimal.valueOf(100));
-//  }
 }
