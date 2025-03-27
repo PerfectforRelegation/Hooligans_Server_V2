@@ -1,14 +1,15 @@
 package com.joh.coin.service;
 
-import com.joh.coin.dto.TradeOrderReq;
-import com.joh.coin.dto.TradeOrderRes;
+import com.joh.coin.dto.request.TradeOrder;
+import com.joh.coin.dto.response.Message;
 import com.joh.coin.entity.OrderBook;
 import com.joh.coin.entity.utill.OrderStatus;
 import com.joh.coin.entity.utill.OrderType;
 import com.joh.coin.exception.FindOrderBookDataException;
 import com.joh.coin.exception.OrderBookSaveException;
-import com.joh.coin.handler.CoinWebSocketHandler;
+//import com.joh.coin.handler.CoinWebSocketHandler;
 import com.joh.coin.repository.OrderBookRepository;
+import com.joh.common.coin.CoinRepository;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
@@ -22,17 +23,18 @@ import org.springframework.transaction.reactive.TransactionalOperator;
 public class OrderBookService {
 
   private final OrderBookRepository orderBookRepository;
-  private final CoinWebSocketHandler coinWebSocketHandler;
+//  private final CoinWebSocketHandler coinWebSocketHandler;
   // 트랜잭션
   private final TransactionalOperator transactionalOperator;
+  private final CoinRepository coinRepository;
 
   // 매수 메서드
-  public Mono<TradeOrderRes> buyCoin(String userId, TradeOrderReq tradeOrderReq) {
+  public Mono<Message> buyCoin(String userId, TradeOrder tradeOrder) {
 
     // 코인 아이디, 가격, 수량
-    Long coinId = tradeOrderReq.getCoinId();
-    Long price = tradeOrderReq.getPrice();
-    Long amount = tradeOrderReq.getAmount();
+    Long coinId = tradeOrder.getCoinId();
+    Long price = tradeOrder.getPrice();
+    Long amount = tradeOrder.getAmount();
 
     AtomicReference<Long> amountToBuy = new AtomicReference<>(amount);
 
@@ -125,10 +127,10 @@ public class OrderBookService {
           long completedAmountToBuy = amount - restAmountToBuy;
           LocalDateTime nowTime = LocalDateTime.now();
 
-          // TODO: 2025-02-26 현재가 수정 (카프카를 통해 넘겨주는 건 너무 오바인듯), 일단 명시 
-          if (restAmountToBuy < amount) {
-            coinWebSocketHandler.updatePrice("심볼을 받게 돼있는데 바꿔야 함", price);
-          }
+          // TODO: 2025-03-13 카프카로 overview 서비스에 데이터 전송
+//          if (restAmountToBuy < amount) {
+//            coinWebSocketHandler.updateCurrentPrice(coinId, price);
+//          }
 
           // amount = 4, amountToBuy = 1 -> 3개는 completed, 1개는 pending 이어야 함
           // 매수한 게 없으면 그대로 PENDING 저장
@@ -143,7 +145,7 @@ public class OrderBookService {
                 .createdAt(nowTime)
                 .build();
             return orderBookRepository.save(pendingOrderBook)
-                .thenReturn(new TradeOrderRes("매수 요청이 완료되었습니다. 주문이 PENDING 상태로 등록되었습니다."));
+                .thenReturn(new Message("매수 요청이 완료되었습니다. 주문이 PENDING 상태로 등록되었습니다."));
           }
 
           // 일부만 체결 된 거면
@@ -172,7 +174,7 @@ public class OrderBookService {
             return Mono.when(
                 orderBookRepository.save(pendingOrderBook),
                 orderBookRepository.save(completedOrderBook)
-            ).thenReturn(new TradeOrderRes("매수 요청이 완료되었습니다. 일부 주문이 PENDING 상태로 등록되었습니다."));
+            ).thenReturn(new Message("매수 요청이 완료되었습니다. 일부 주문이 PENDING 상태로 등록되었습니다."));
           }
 
           // 모두 체결 됐을 때
@@ -188,7 +190,7 @@ public class OrderBookService {
 
           return orderBookRepository
               .save(completedOrderBook)
-              .thenReturn(new TradeOrderRes("매수 요청이 완료되었습니다. 모든 주문이 체결되었습니다."));
+              .thenReturn(new Message("매수 요청이 완료되었습니다. 모든 주문이 체결되었습니다."));
         }))
         .onErrorMap(e -> new OrderBookSaveException("남은 매수 요청 처리 중 오류 발생: " + e.getMessage()))
         .as(transactionalOperator::transactional); // 트랜잭션 적용;
@@ -217,11 +219,11 @@ public class OrderBookService {
   }
 
   // 매도 메서드
-  public Mono<TradeOrderRes> sellCoin(String userId, TradeOrderReq tradeOrderReq) {
+  public Mono<Message> sellCoin(String userId, TradeOrder tradeOrder) {
 
-    Long coinId = tradeOrderReq.getCoinId();
-    Long price = tradeOrderReq.getPrice();
-    Long amount = tradeOrderReq.getAmount();
+    Long coinId = tradeOrder.getCoinId();
+    Long price = tradeOrder.getPrice();
+    Long amount = tradeOrder.getAmount();
 
     AtomicReference<Long> amountToSell = new AtomicReference<>(amount);
 
@@ -337,27 +339,32 @@ public class OrderBookService {
           // 매도한 게 없으면 그대로 PENDING 저장
           if (completedAmountToSell == 0) {
             return orderBookRepository.save(pendingOrderBook)
-                .thenReturn(new TradeOrderRes("매도 요청이 완료되었습니다. 주문이 PENDING 상태로 등록되었습니다."));
+                .thenReturn(new Message("매도 요청이 완료되었습니다. 주문이 PENDING 상태로 등록되었습니다."));
           }
 
           // 일부만 체결된 거면
           if (amount > restAmountToSell && restAmountToSell > 0) {
-            coinWebSocketHandler.updatePrice("심볼을 받게 돼있는데 바꿔야 함", price);
+//            coinWebSocketHandler.updateCurrentPrice(coinId, price);
 
             return orderBookRepository.save(pendingOrderBook)
                 .then(orderBookRepository.save(completedOrderBook))
-                .thenReturn(new TradeOrderRes("매도 요청이 완료되었습니다. 일부 주문이 PENDING 상태로 등록되었습니다."));
+                .thenReturn(new Message("매도 요청이 완료되었습니다. 일부 주문이 PENDING 상태로 등록되었습니다."));
           }
 
           // 모두 체결 됐을 때
           completedOrderBook.setUpdatedAt(nowTime);
-          coinWebSocketHandler.updatePrice("심볼을 받게 돼있는데 바꿔야 함", price);
+//          coinWebSocketHandler.updateCurrentPrice(coinId, price);
 
           return orderBookRepository.save(completedOrderBook)
-              .thenReturn(new TradeOrderRes("매도 요청이 완료되었습니다. 모든 주문이 체결되었습니다."));
+              .thenReturn(new Message("매도 요청이 완료되었습니다. 모든 주문이 체결되었습니다."));
 
         }))
         .onErrorMap(e -> new OrderBookSaveException("남은 매도 요청 처리 중 오류 발생: " + e.getMessage()))
-        .as(transactionalOperator::transactional);
+        .as(transactionalOperator::transactional)
+        .flatMap(result -> {
+          // TODO: 2025-03-13 카프카로 overview 서비스에 데이터 전송
+          // if (amountToSell.get() < amount) return coinWebSocketHandler.updateCurrentPrice(coinId, price).thenReturn(result);
+          return Mono.just(result);
+        });
   }
 }

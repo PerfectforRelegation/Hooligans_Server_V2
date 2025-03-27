@@ -1,4 +1,4 @@
-package com.joh.coin.entity;
+package com.joh.common.coin.asset;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

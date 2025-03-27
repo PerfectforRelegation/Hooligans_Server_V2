@@ -1,9 +1,9 @@
 package com.joh.common.redis;
 
-import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -11,34 +11,16 @@ import reactor.core.publisher.Mono;
 public class RedisUtil {
 
   private final ReactiveRedisTemplate<String, Object> reactiveRedisTemplate;
-  private static final String LOGIN_PREFIX = "login:";
 
-  public Mono<Boolean> addRefreshToken(String oauthId, String refreshToken, long expirationMillis) {
-    String key = LOGIN_PREFIX + oauthId;
-    return reactiveRedisTemplate
-        .opsForValue()
-        .set(key, refreshToken, Duration.ofMillis(expirationMillis));
+  public <T> Mono<Void> saveObject(String key, T data) {
+    return reactiveRedisTemplate.opsForList()
+        .rightPush(key, data)
+        .then();
   }
 
-  public Mono<Boolean> hasKeyRefreshToken(String oauthId) {
-    String key = LOGIN_PREFIX + oauthId;
-    return reactiveRedisTemplate
-        .hasKey(key);
-  }
-
-  public Mono<String> getRefreshToken(String oauthId) {
-    String key = LOGIN_PREFIX + oauthId;
-    return reactiveRedisTemplate
-        .opsForValue()
-        .get(key)
-        .map(Object::toString)
-        .switchIfEmpty(Mono.empty());
-  }
-
-  public Mono<Boolean> deleteRefreshToken(String oauthId) {
-    String key = LOGIN_PREFIX + oauthId;
-    return reactiveRedisTemplate
-        .delete(key)
-        .map(deletedCount -> deletedCount > 0);
+  public <T> Flux<T> getObjectList(String key, Class<T> clazz) {
+    return reactiveRedisTemplate.opsForList()
+        .range(key, 0, -1) // 전체 리스트 조회
+        .cast(clazz);                // 타입 변환
   }
 }

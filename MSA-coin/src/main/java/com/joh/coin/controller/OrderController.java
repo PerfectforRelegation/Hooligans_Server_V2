@@ -1,7 +1,7 @@
 package com.joh.coin.controller;
 
-import com.joh.coin.dto.TradeOrderReq;
-import com.joh.coin.dto.TradeOrderRes;
+import com.joh.coin.dto.request.TradeOrder;
+import com.joh.coin.dto.response.Message;
 import com.joh.coin.service.OrderBookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +19,16 @@ public class OrderController {
   private final OrderBookService orderBookService;
 
   @PostMapping("/buy")
-  public Mono<ResponseEntity<TradeOrderRes>> buyCoin(@RequestBody TradeOrderReq tradeOrderReq) {
+  public Mono<ResponseEntity<Message>> buyCoin(@RequestBody TradeOrder tradeOrder) {
 
-    return orderBookService.buyCoin("testId", tradeOrderReq)
+    return orderBookService.buyCoin("testId", tradeOrder)
         .map(result -> ResponseEntity.ok().body(result));
   }
 
   @PostMapping("/sell")
-  public Mono<ResponseEntity<TradeOrderRes>> sellCoin(@RequestBody TradeOrderReq tradeOrderReq) {
+  public Mono<ResponseEntity<Message>> sellCoin(@RequestBody TradeOrder tradeOrder) {
 
-    return orderBookService.sellCoin("testID", tradeOrderReq)
+    return orderBookService.sellCoin("testID", tradeOrder)
         .map(result -> ResponseEntity.ok().body(result));
   }
 }

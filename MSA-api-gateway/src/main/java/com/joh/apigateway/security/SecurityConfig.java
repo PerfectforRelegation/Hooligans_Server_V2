@@ -51,6 +51,7 @@ public class SecurityConfig {
             .pathMatchers(HttpMethod.POST, "/core/kakao/users/auth").permitAll()
             .pathMatchers(HttpMethod.GET, "/kakao/auth").permitAll()
             .pathMatchers("/core/**").permitAll()
+            .pathMatchers("/coin-overview/**").permitAll()
             .pathMatchers("/coin/**").permitAll()
             .pathMatchers("/v3/api-docs/**", "/webjars/swagger-ui/**").permitAll()
             .anyExchange().authenticated()

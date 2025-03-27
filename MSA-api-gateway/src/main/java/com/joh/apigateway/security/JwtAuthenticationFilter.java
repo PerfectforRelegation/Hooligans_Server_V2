@@ -5,11 +5,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -52,7 +49,8 @@ public class JwtAuthenticationFilter implements WebFilter {
         "/core/webjars/swagger-ui/**", // Core 서비스 Swagger UI
         "/coin/webjars/swagger-ui/**", // Coin 서비스 Swagger UI
         "/webjars/swagger-ui/**", // 공통 Swagger UI 정적 리소스
-        "/coin/coins"
+//        "/coin/coins",       // 주문 처리 경로
+        "/coin-overview/**" // 모든 코인 정보 조회
     );
 
     // 인증이 필요 없는 경로인 경우 필터를 통과

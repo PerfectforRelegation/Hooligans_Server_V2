@@ -15,7 +15,7 @@ spring:
     import: optional:file:.env[.properties]
 
   application:
-    name: coin-service
+    name: coin-overview-service
 
   data:
     mongodb:
@@ -34,7 +34,7 @@ spring:
     topics: ${KAFKA_TOPICS}
 
 server:
-  port: 8082
+  port: 8083
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}

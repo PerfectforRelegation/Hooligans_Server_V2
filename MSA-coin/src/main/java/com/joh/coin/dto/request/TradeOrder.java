@@ -1,11 +1,11 @@
-package com.joh.coin.dto;
+package com.joh.coin.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class TradeOrderReq {
+public class TradeOrder {
 
   private Long coinId;
   private Long price;

@@ -1,4 +1,4 @@
-package com.joh.coin.entity;
+package com.joh.common.coin;
 
 import java.time.LocalDateTime;
 import lombok.Getter;
